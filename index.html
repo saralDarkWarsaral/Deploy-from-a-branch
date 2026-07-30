@@ -186,6 +186,17 @@ html[dir="rtl"] .check{flex-direction:row-reverse;text-align:right}
 html[dir="rtl"] .tabs{direction:rtl}
 html[dir="rtl"] .task-time{text-align:right}
 
+
+.status-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:12px 0}
+.status-box{border:1px solid var(--line);border-radius:16px;padding:14px;background:rgba(12,20,38,.72)}
+.status-box.now{box-shadow:0 0 0 1px rgba(92,226,199,.25),0 10px 30px rgba(0,0,0,.16)}
+.status-kicker{font-size:12px;font-weight:800;letter-spacing:.08em;color:var(--muted);text-transform:uppercase}
+.status-time{font-size:21px;font-weight:850;margin:5px 0}
+.status-sub{font-size:13px;color:var(--muted);line-height:1.45}
+.rotation-note{font-size:12px;color:var(--muted);margin-top:8px}
+.time-grid .current-row{background:rgba(92,226,199,.10);font-weight:800}
+@media(max-width:560px){.status-grid{grid-template-columns:1fr}}
+
 </style>
 </head>
 <body>
@@ -219,19 +230,19 @@ html[dir="rtl"] .task-time{text-align:right}
 
 <script>
 const T={
-ja:{common:"⏰ 共通時間表",timezone:"タイムゾーン",automatic:"自動（この端末）",local:"あなたの現地時間",currentZone:"現在の設定",main:"🎯 主な内容",procedure:"📋 手順",times:"⏰ 生存軍備",points:"⭐ ポイント",check:"☑ チェックリスト",reset:"チェックをリセット",done:"完了",server:"サーバー",japan:"日本",summer:"イタリア夏",winter:"イタリア冬",america:"アメリカ東部",days:["月曜日","火曜日","水曜日","木曜日","金曜日"],weekend:"土曜日・日曜日",none:"特に指定された内容はありません。",save:"チェック状態はこの端末に保存されます。",dst:"夏時間・冬時間は自動計算されます。"},
-it:{common:"⏰ TABELLA ORARIA COMUNE",timezone:"Fuso orario",automatic:"Automatico (questo dispositivo)",local:"La tua ora locale",currentZone:"Impostazione attuale",main:"🎯 ATTIVITÀ PRINCIPALI",procedure:"📋 PROCEDURA",times:"⏰ CASSE SOPRAVVIVENZA",points:"⭐ PUNTI IMPORTANTI",check:"☑ CHECKLIST",reset:"Azzera checklist",done:"Completato",server:"Server",japan:"Giappone",summer:"Italia estate",winter:"Italia inverno",america:"USA orientale",days:["Lunedì","Martedì","Mercoledì","Giovedì","Venerdì"],weekend:"Sabato・Domenica",none:"Non sono indicate attività specifiche.",save:"Lo stato della checklist viene salvato su questo dispositivo.",dst:"L’ora legale e l’ora solare vengono calcolate automaticamente."},
-en:{common:"⏰ COMMON TIME TABLE",timezone:"Time zone",automatic:"Automatic (this device)",local:"Your local time",currentZone:"Current setting",main:"🎯 MAIN ACTIVITIES",procedure:"📋 PROCEDURE",times:"⏰ SURVIVAL CHEST TIMES",points:"⭐ IMPORTANT POINTS",check:"☑ CHECKLIST",reset:"Reset checklist",done:"Completed",server:"Server",japan:"Japan",summer:"Italy DST",winter:"Italy Standard",america:"US Eastern",days:["Monday","Tuesday","Wednesday","Thursday","Friday"],weekend:"Saturday・Sunday",none:"No specific activities are listed.",save:"Checklist status is saved on this device.",dst:"Daylight saving and standard time are calculated automatically."},
-ar:{common:"⏰ جدول التوقيت العام",timezone:"المنطقة الزمنية",automatic:"تلقائي (هذا الجهاز)",local:"توقيتك المحلي",currentZone:"الإعداد الحالي",main:"🎯 الأنشطة الرئيسية",procedure:"📋 الخطوات",times:"⏰ أوقات صناديق النجاة",points:"⭐ نقاط مهمة",check:"☑ قائمة التحقق",reset:"إعادة تعيين القائمة",done:"مكتمل",server:"الخادم",days:["الاثنين","الثلاثاء","الأربعاء","الخميس","الجمعة"],weekend:"السبت・الأحد",none:"لا توجد أنشطة محددة.",save:"يتم حفظ حالة قائمة التحقق على هذا الجهاز.",dst:"يتم حساب التوقيت الصيفي والشتوي تلقائيًا."},
-ko:{common:"⏰ 공통 시간표",timezone:"시간대",automatic:"자동(이 기기)",local:"내 현지 시간",currentZone:"현재 설정",main:"🎯 주요 활동",procedure:"📋 절차",times:"⏰ 생존 상자 시간",points:"⭐ 중요 포인트",check:"☑ 체크리스트",reset:"체크 초기화",done:"완료",server:"서버",days:["월요일","화요일","수요일","목요일","금요일"],weekend:"토요일・일요일",none:"지정된 활동이 없습니다.",save:"체크 상태는 이 기기에 저장됩니다.",dst:"서머타임과 표준시는 자동으로 계산됩니다."},
-"zh-CN":{common:"⏰ 通用时间表",timezone:"时区",automatic:"自动（此设备）",local:"你的当地时间",currentZone:"当前设置",main:"🎯 主要活动",procedure:"📋 步骤",times:"⏰ 生存宝箱时间",points:"⭐ 重要提示",check:"☑ 检查清单",reset:"重置清单",done:"已完成",server:"服务器",days:["星期一","星期二","星期三","星期四","星期五"],weekend:"星期六・星期日",none:"没有指定活动。",save:"清单状态保存在此设备上。",dst:"夏令时和标准时间会自动计算。"},
-"zh-TW":{common:"⏰ 通用時間表",timezone:"時區",automatic:"自動（此裝置）",local:"你的當地時間",currentZone:"目前設定",main:"🎯 主要活動",procedure:"📋 步驟",times:"⏰ 生存寶箱時間",points:"⭐ 重要提示",check:"☑ 檢查清單",reset:"重設清單",done:"已完成",server:"伺服器",days:["星期一","星期二","星期三","星期四","星期五"],weekend:"星期六・星期日",none:"沒有指定活動。",save:"清單狀態會儲存在此裝置。",dst:"夏令時間與標準時間會自動計算。"},
-es:{common:"⏰ HORARIO COMÚN",timezone:"Zona horaria",automatic:"Automático (este dispositivo)",local:"Tu hora local",currentZone:"Configuración actual",main:"🎯 ACTIVIDADES PRINCIPALES",procedure:"📋 PROCEDIMIENTO",times:"⏰ HORARIOS DE COFRES",points:"⭐ PUNTOS IMPORTANTES",check:"☑ LISTA DE CONTROL",reset:"Reiniciar lista",done:"Completado",server:"Servidor",days:["Lunes","Martes","Miércoles","Jueves","Viernes"],weekend:"Sábado・Domingo",none:"No hay actividades específicas.",save:"El estado de la lista se guarda en este dispositivo.",dst:"El horario de verano y el estándar se calculan automáticamente."},
-fr:{common:"⏰ TABLEAU HORAIRE COMMUN",timezone:"Fuseau horaire",automatic:"Automatique (cet appareil)",local:"Votre heure locale",currentZone:"Réglage actuel",main:"🎯 ACTIVITÉS PRINCIPALES",procedure:"📋 PROCÉDURE",times:"⏰ HORAIRES DES COFFRES",points:"⭐ POINTS IMPORTANTS",check:"☑ LISTE DE CONTRÔLE",reset:"Réinitialiser",done:"Terminé",server:"Serveur",days:["Lundi","Mardi","Mercredi","Jeudi","Vendredi"],weekend:"Samedi・Dimanche",none:"Aucune activité spécifique n’est indiquée.",save:"La liste est enregistrée sur cet appareil.",dst:"L’heure d’été et l’heure standard sont calculées automatiquement."},
-de:{common:"⏰ GEMEINSAME ZEITTABELLE",timezone:"Zeitzone",automatic:"Automatisch (dieses Gerät)",local:"Deine Ortszeit",currentZone:"Aktuelle Einstellung",main:"🎯 HAUPTAKTIVITÄTEN",procedure:"📋 ABLAUF",times:"⏰ ÜBERLEBENSKISTEN-ZEITEN",points:"⭐ WICHTIGE PUNKTE",check:"☑ CHECKLISTE",reset:"Checkliste zurücksetzen",done:"Erledigt",server:"Server",days:["Montag","Dienstag","Mittwoch","Donnerstag","Freitag"],weekend:"Samstag・Sonntag",none:"Keine besonderen Aktivitäten angegeben.",save:"Der Checklistenstatus wird auf diesem Gerät gespeichert.",dst:"Sommer- und Winterzeit werden automatisch berechnet."},
-pt:{common:"⏰ TABELA DE HORÁRIOS",timezone:"Fuso horário",automatic:"Automático (este dispositivo)",local:"Sua hora local",currentZone:"Configuração atual",main:"🎯 ATIVIDADES PRINCIPAIS",procedure:"📋 PROCEDIMENTO",times:"⏰ HORÁRIOS DOS BAÚS",points:"⭐ PONTOS IMPORTANTES",check:"☑ LISTA DE VERIFICAÇÃO",reset:"Redefinir lista",done:"Concluído",server:"Servidor",days:["Segunda","Terça","Quarta","Quinta","Sexta"],weekend:"Sábado・Domingo",none:"Não há atividades específicas.",save:"O estado da lista é salvo neste dispositivo.",dst:"O horário de verão e o padrão são calculados automaticamente."},
-ru:{common:"⏰ ОБЩАЯ ТАБЛИЦА ВРЕМЕНИ",timezone:"Часовой пояс",automatic:"Автоматически (это устройство)",local:"Ваше местное время",currentZone:"Текущая настройка",main:"🎯 ОСНОВНЫЕ ДЕЙСТВИЯ",procedure:"📋 ПОРЯДОК",times:"⏰ ВРЕМЯ СУНДУКОВ",points:"⭐ ВАЖНЫЕ МОМЕНТЫ",check:"☑ СПИСОК ПРОВЕРКИ",reset:"Сбросить список",done:"Выполнено",server:"Сервер",days:["Понедельник","Вторник","Среда","Четверг","Пятница"],weekend:"Суббота・Воскресенье",none:"Особые действия не указаны.",save:"Состояние списка сохраняется на этом устройстве.",dst:"Летнее и стандартное время рассчитываются автоматически."},
-tr:{common:"⏰ ORTAK SAAT TABLOSU",timezone:"Saat dilimi",automatic:"Otomatik (bu cihaz)",local:"Yerel saatiniz",currentZone:"Geçerli ayar",main:"🎯 ANA ETKİNLİKLER",procedure:"📋 İŞLEM",times:"⏰ HAYATTA KALMA SANDIĞI SAATLERİ",points:"⭐ ÖNEMLİ NOKTALAR",check:"☑ KONTROL LİSTESİ",reset:"Listeyi sıfırla",done:"Tamamlandı",server:"Sunucu",days:["Pazartesi","Salı","Çarşamba","Perşembe","Cuma"],weekend:"Cumartesi・Pazar",none:"Belirli bir etkinlik belirtilmemiştir.",save:"Kontrol listesi durumu bu cihazda saklanır.",dst:"Yaz saati ve standart saat otomatik hesaplanır."}
+ja:{rotation:"対戦ローテーション",rotationShort:"対戦",rotationNote:"曜日ではなく、サーバーの対戦順です。",now:"開催中",next:"次の時間帯",remaining:"終了まで",startsIn:"開始まで",localOrder:"現地時間順",common:"⏰ 共通時間表",timezone:"タイムゾーン",automatic:"自動（この端末）",local:"あなたの現地時間",currentZone:"現在の設定",main:"🎯 主な内容",procedure:"📋 手順",times:"⏰ 生存軍備",points:"⭐ ポイント",check:"☑ チェックリスト",reset:"チェックをリセット",done:"完了",server:"サーバー",japan:"日本",summer:"イタリア夏",winter:"イタリア冬",america:"アメリカ東部",days:["月曜日","火曜日","水曜日","木曜日","金曜日"],weekend:"土曜日・日曜日",none:"特に指定された内容はありません。",save:"チェック状態はこの端末に保存されます。",dst:"夏時間・冬時間は自動計算されます。"},
+it:{rotation:"Rotazione Duello",rotationShort:"Duello",rotationNote:"È l’ordine del Duello del Server, non il giorno locale.",now:"IN CORSO",next:"PROSSIMO",remaining:"Termina tra",startsIn:"Inizia tra",localOrder:"Ordine dell’ora locale",common:"⏰ TABELLA ORARIA COMUNE",timezone:"Fuso orario",automatic:"Automatico (questo dispositivo)",local:"La tua ora locale",currentZone:"Impostazione attuale",main:"🎯 ATTIVITÀ PRINCIPALI",procedure:"📋 PROCEDURA",times:"⏰ CASSE SOPRAVVIVENZA",points:"⭐ PUNTI IMPORTANTI",check:"☑ CHECKLIST",reset:"Azzera checklist",done:"Completato",server:"Server",japan:"Giappone",summer:"Italia estate",winter:"Italia inverno",america:"USA orientale",days:["Lunedì","Martedì","Mercoledì","Giovedì","Venerdì"],weekend:"Sabato・Domenica",none:"Non sono indicate attività specifiche.",save:"Lo stato della checklist viene salvato su questo dispositivo.",dst:"L’ora legale e l’ora solare vengono calcolate automaticamente."},
+en:{rotation:"Duel Rotation",rotationShort:"Duel",rotationNote:"This is the Server duel order, not your local weekday.",now:"NOW",next:"NEXT",remaining:"Ends in",startsIn:"Starts in",localOrder:"Sorted by your local time",common:"⏰ COMMON TIME TABLE",timezone:"Time zone",automatic:"Automatic (this device)",local:"Your local time",currentZone:"Current setting",main:"🎯 MAIN ACTIVITIES",procedure:"📋 PROCEDURE",times:"⏰ SURVIVAL CHEST TIMES",points:"⭐ IMPORTANT POINTS",check:"☑ CHECKLIST",reset:"Reset checklist",done:"Completed",server:"Server",japan:"Japan",summer:"Italy DST",winter:"Italy Standard",america:"US Eastern",days:["Monday","Tuesday","Wednesday","Thursday","Friday"],weekend:"Saturday・Sunday",none:"No specific activities are listed.",save:"Checklist status is saved on this device.",dst:"Daylight saving and standard time are calculated automatically."},
+ar:{rotation:"ترتيب المبارزة",rotationShort:"المبارزة",rotationNote:"هذا ترتيب مبارزة الخادم وليس يومك المحلي.",now:"الآن",next:"التالي",remaining:"ينتهي خلال",startsIn:"يبدأ خلال",localOrder:"مرتب حسب توقيتك المحلي",common:"⏰ جدول التوقيت العام",timezone:"المنطقة الزمنية",automatic:"تلقائي (هذا الجهاز)",local:"توقيتك المحلي",currentZone:"الإعداد الحالي",main:"🎯 الأنشطة الرئيسية",procedure:"📋 الخطوات",times:"⏰ أوقات صناديق النجاة",points:"⭐ نقاط مهمة",check:"☑ قائمة التحقق",reset:"إعادة تعيين القائمة",done:"مكتمل",server:"الخادم",days:["الاثنين","الثلاثاء","الأربعاء","الخميس","الجمعة"],weekend:"السبت・الأحد",none:"لا توجد أنشطة محددة.",save:"يتم حفظ حالة قائمة التحقق على هذا الجهاز.",dst:"يتم حساب التوقيت الصيفي والشتوي تلقائيًا."},
+ko:{rotation:"대결 로테이션",rotationShort:"대결",rotationNote:"현지 요일이 아니라 서버 대결 순서입니다.",now:"진행 중",next:"다음",remaining:"종료까지",startsIn:"시작까지",localOrder:"현지 시간순",common:"⏰ 공통 시간표",timezone:"시간대",automatic:"자동(이 기기)",local:"내 현지 시간",currentZone:"현재 설정",main:"🎯 주요 활동",procedure:"📋 절차",times:"⏰ 생존 상자 시간",points:"⭐ 중요 포인트",check:"☑ 체크리스트",reset:"체크 초기화",done:"완료",server:"서버",days:["월요일","화요일","수요일","목요일","금요일"],weekend:"토요일・일요일",none:"지정된 활동이 없습니다.",save:"체크 상태는 이 기기에 저장됩니다.",dst:"서머타임과 표준시는 자동으로 계산됩니다."},
+"zh-CN":{rotation:"对战轮次",rotationShort:"对战",rotationNote:"这是服务器对战顺序，不是你的当地星期。",now:"当前",next:"下一时段",remaining:"距离结束",startsIn:"距离开始",localOrder:"按当地时间排序",common:"⏰ 通用时间表",timezone:"时区",automatic:"自动（此设备）",local:"你的当地时间",currentZone:"当前设置",main:"🎯 主要活动",procedure:"📋 步骤",times:"⏰ 生存宝箱时间",points:"⭐ 重要提示",check:"☑ 检查清单",reset:"重置清单",done:"已完成",server:"服务器",days:["星期一","星期二","星期三","星期四","星期五"],weekend:"星期六・星期日",none:"没有指定活动。",save:"清单状态保存在此设备上。",dst:"夏令时和标准时间会自动计算。"},
+"zh-TW":{rotation:"對戰輪次",rotationShort:"對戰",rotationNote:"這是伺服器對戰順序，不是你的當地星期。",now:"目前",next:"下一時段",remaining:"距離結束",startsIn:"距離開始",localOrder:"依當地時間排序",common:"⏰ 通用時間表",timezone:"時區",automatic:"自動（此裝置）",local:"你的當地時間",currentZone:"目前設定",main:"🎯 主要活動",procedure:"📋 步驟",times:"⏰ 生存寶箱時間",points:"⭐ 重要提示",check:"☑ 檢查清單",reset:"重設清單",done:"已完成",server:"伺服器",days:["星期一","星期二","星期三","星期四","星期五"],weekend:"星期六・星期日",none:"沒有指定活動。",save:"清單狀態會儲存在此裝置。",dst:"夏令時間與標準時間會自動計算。"},
+es:{rotation:"Rotación de Duelo",rotationShort:"Duelo",rotationNote:"Es el orden del duelo del servidor, no tu día local.",now:"AHORA",next:"SIGUIENTE",remaining:"Termina en",startsIn:"Empieza en",localOrder:"Ordenado por tu hora local",common:"⏰ HORARIO COMÚN",timezone:"Zona horaria",automatic:"Automático (este dispositivo)",local:"Tu hora local",currentZone:"Configuración actual",main:"🎯 ACTIVIDADES PRINCIPALES",procedure:"📋 PROCEDIMIENTO",times:"⏰ HORARIOS DE COFRES",points:"⭐ PUNTOS IMPORTANTES",check:"☑ LISTA DE CONTROL",reset:"Reiniciar lista",done:"Completado",server:"Servidor",days:["Lunes","Martes","Miércoles","Jueves","Viernes"],weekend:"Sábado・Domingo",none:"No hay actividades específicas.",save:"El estado de la lista se guarda en este dispositivo.",dst:"El horario de verano y el estándar se calculan automáticamente."},
+fr:{rotation:"Rotation du Duel",rotationShort:"Duel",rotationNote:"Il s’agit de l’ordre du Duel du serveur, pas de votre jour local.",now:"EN COURS",next:"SUIVANT",remaining:"Se termine dans",startsIn:"Commence dans",localOrder:"Trié selon votre heure locale",common:"⏰ TABLEAU HORAIRE COMMUN",timezone:"Fuseau horaire",automatic:"Automatique (cet appareil)",local:"Votre heure locale",currentZone:"Réglage actuel",main:"🎯 ACTIVITÉS PRINCIPALES",procedure:"📋 PROCÉDURE",times:"⏰ HORAIRES DES COFFRES",points:"⭐ POINTS IMPORTANTS",check:"☑ LISTE DE CONTRÔLE",reset:"Réinitialiser",done:"Terminé",server:"Serveur",days:["Lundi","Mardi","Mercredi","Jeudi","Vendredi"],weekend:"Samedi・Dimanche",none:"Aucune activité spécifique n’est indiquée.",save:"La liste est enregistrée sur cet appareil.",dst:"L’heure d’été et l’heure standard sont calculées automatiquement."},
+de:{rotation:"Duell-Rotation",rotationShort:"Duell",rotationNote:"Dies ist die Server-Duellreihenfolge, nicht dein lokaler Wochentag.",now:"JETZT",next:"ALS NÄCHSTES",remaining:"Endet in",startsIn:"Beginnt in",localOrder:"Nach deiner Ortszeit sortiert",common:"⏰ GEMEINSAME ZEITTABELLE",timezone:"Zeitzone",automatic:"Automatisch (dieses Gerät)",local:"Deine Ortszeit",currentZone:"Aktuelle Einstellung",main:"🎯 HAUPTAKTIVITÄTEN",procedure:"📋 ABLAUF",times:"⏰ ÜBERLEBENSKISTEN-ZEITEN",points:"⭐ WICHTIGE PUNKTE",check:"☑ CHECKLISTE",reset:"Checkliste zurücksetzen",done:"Erledigt",server:"Server",days:["Montag","Dienstag","Mittwoch","Donnerstag","Freitag"],weekend:"Samstag・Sonntag",none:"Keine besonderen Aktivitäten angegeben.",save:"Der Checklistenstatus wird auf diesem Gerät gespeichert.",dst:"Sommer- und Winterzeit werden automatisch berechnet."},
+pt:{rotation:"Rotação do Duelo",rotationShort:"Duelo",rotationNote:"Esta é a ordem do duelo do servidor, não o seu dia local.",now:"AGORA",next:"PRÓXIMO",remaining:"Termina em",startsIn:"Começa em",localOrder:"Ordenado pela sua hora local",common:"⏰ TABELA DE HORÁRIOS",timezone:"Fuso horário",automatic:"Automático (este dispositivo)",local:"Sua hora local",currentZone:"Configuração atual",main:"🎯 ATIVIDADES PRINCIPAIS",procedure:"📋 PROCEDIMENTO",times:"⏰ HORÁRIOS DOS BAÚS",points:"⭐ PONTOS IMPORTANTES",check:"☑ LISTA DE VERIFICAÇÃO",reset:"Redefinir lista",done:"Concluído",server:"Servidor",days:["Segunda","Terça","Quarta","Quinta","Sexta"],weekend:"Sábado・Domingo",none:"Não há atividades específicas.",save:"O estado da lista é salvo neste dispositivo.",dst:"O horário de verão e o padrão são calculados automaticamente."},
+ru:{rotation:"Ротация дуэли",rotationShort:"Дуэль",rotationNote:"Это порядок серверной дуэли, а не ваш местный день недели.",now:"СЕЙЧАС",next:"ДАЛЕЕ",remaining:"До конца",startsIn:"До начала",localOrder:"По вашему местному времени",common:"⏰ ОБЩАЯ ТАБЛИЦА ВРЕМЕНИ",timezone:"Часовой пояс",automatic:"Автоматически (это устройство)",local:"Ваше местное время",currentZone:"Текущая настройка",main:"🎯 ОСНОВНЫЕ ДЕЙСТВИЯ",procedure:"📋 ПОРЯДОК",times:"⏰ ВРЕМЯ СУНДУКОВ",points:"⭐ ВАЖНЫЕ МОМЕНТЫ",check:"☑ СПИСОК ПРОВЕРКИ",reset:"Сбросить список",done:"Выполнено",server:"Сервер",days:["Понедельник","Вторник","Среда","Четверг","Пятница"],weekend:"Суббота・Воскресенье",none:"Особые действия не указаны.",save:"Состояние списка сохраняется на этом устройстве.",dst:"Летнее и стандартное время рассчитываются автоматически."},
+tr:{rotation:"Düello Rotasyonu",rotationShort:"Düello",rotationNote:"Bu, yerel haftanın günü değil sunucu düello sırasıdır.",now:"ŞİMDİ",next:"SONRAKİ",remaining:"Bitmesine",startsIn:"Başlamasına",localOrder:"Yerel saatinize göre sıralı",common:"⏰ ORTAK SAAT TABLOSU",timezone:"Saat dilimi",automatic:"Otomatik (bu cihaz)",local:"Yerel saatiniz",currentZone:"Geçerli ayar",main:"🎯 ANA ETKİNLİKLER",procedure:"📋 İŞLEM",times:"⏰ HAYATTA KALMA SANDIĞI SAATLERİ",points:"⭐ ÖNEMLİ NOKTALAR",check:"☑ KONTROL LİSTESİ",reset:"Listeyi sıfırla",done:"Tamamlandı",server:"Sunucu",days:["Pazartesi","Salı","Çarşamba","Perşembe","Cuma"],weekend:"Cumartesi・Pazar",none:"Belirli bir etkinlik belirtilmemiştir.",save:"Kontrol listesi durumu bu cihazda saklanır.",dst:"Yaz saati ve standart saat otomatik hesaplanır."}
 };
 
 const commonTimes=[
@@ -425,14 +436,80 @@ function serverRangeToZone(range,zone=activeZone()){
   const fmt=new Intl.DateTimeFormat(locale,{timeZone:zone,hour:"2-digit",minute:"2-digit",hour12:false});
   return `${fmt.format(new Date(start))}–${fmt.format(new Date(end))}`;
 }
+
+function parseServerRange(range,baseDate=new Date()){
+  const m=range.match(/^(\d{2}):(\d{2})[–-](\d{2}):(\d{2})$/);
+  if(!m)return null;
+  const y=baseDate.getUTCFullYear(),mo=baseDate.getUTCMonth(),d=baseDate.getUTCDate();
+  let start=Date.UTC(y,mo,d,Number(m[1])+2,Number(m[2]));
+  let end=Date.UTC(y,mo,d,Number(m[3])+2,Number(m[4]));
+  if(end<=start)end+=86400000;
+  return {start,end};
+}
+function localStartMinutes(range){
+  const p=parseServerRange(range);
+  if(!p)return 0;
+  const parts=new Intl.DateTimeFormat("en-GB",{timeZone:activeZone(),hour:"2-digit",minute:"2-digit",hour12:false}).formatToParts(new Date(p.start));
+  const h=Number(parts.find(x=>x.type==="hour")?.value||0)%24;
+  const m=Number(parts.find(x=>x.type==="minute")?.value||0);
+  return h*60+m;
+}
+function formatDuration(ms){
+  const total=Math.max(0,Math.ceil(ms/60000));
+  const h=Math.floor(total/60),m=total%60;
+  if(lang==="ja")return h?`${h}時間${m}分`:`${m}分`;
+  if(lang==="ko")return h?`${h}시간 ${m}분`:`${m}분`;
+  if(lang==="zh-CN"||lang==="zh-TW")return h?`${h}小时 ${m}分钟`:`${m}分钟`;
+  if(lang==="ar")return h?`${h} س ${m} د`:`${m} د`;
+  return h?`${h}h ${m}m`:`${m}m`;
+}
+function currentAndNextSlots(){
+  const now=Date.now();
+  const candidates=[];
+  for(let dayOffset=-1;dayOffset<=1;dayOffset++){
+    const base=new Date(Date.now()+dayOffset*86400000);
+    commonTimes.forEach((r,index)=>{
+      const p=parseServerRange(r[0],base);
+      candidates.push({index,range:r[0],...p});
+    });
+  }
+  const currentSlot=candidates.find(x=>now>=x.start&&now<x.end);
+  const nextSlot=candidates.filter(x=>x.start>now).sort((a,b)=>a.start-b.start)[0];
+  return {currentSlot,nextSlot,now};
+}
+function statusView(){
+  const {currentSlot,nextSlot,now}=currentAndNextSlots();
+  if(!currentSlot||!nextSlot)return "";
+  return `<div class="status-grid">
+    <div class="status-box now"><div class="status-kicker">🟢 ${tx().now}</div>
+      <div class="status-time">${serverRangeToZone(currentSlot.range)}</div>
+      <div class="status-sub">${tx().server}: ${currentSlot.range}<br>${tx().remaining}: ${formatDuration(currentSlot.end-now)}</div>
+    </div>
+    <div class="status-box"><div class="status-kicker">⏭ ${tx().next}</div>
+      <div class="status-time">${serverRangeToZone(nextSlot.range)}</div>
+      <div class="status-sub">${tx().server}: ${nextSlot.range}<br>${tx().startsIn}: ${formatDuration(nextSlot.start-now)}</div>
+    </div>
+  </div>`;
+}
+
 function zoneDisplayName(){
   const z=activeZone();
   if(selectedZone==="auto")return `${tx().automatic}: ${z}`;
   return `${((zoneLabels[lang]||zoneLabels.en)[z]||z)} (${z})`;
 }
 function commonView(){
-let rows=commonTimes.map(r=>`<div>${r[0]}</div><div>${serverRangeToZone(r[0])}</div>`).join("");
-return `<div class="card"><h2>${tx().common}</h2><p class="note">🌐 Server Time = UTC−2<br>📍 ${tx().currentZone}: ${zoneDisplayName()}<br>☀️/❄️ ${tx().dst}</p><div class="time-scroll"><div class="time-grid"><div class="head">${tx().server}</div><div class="head">${tx().local}</div>${rows}</div></div></div><div class="card"><h3>${tx().weekend}</h3><p>${tx().none}</p></div>`;
+const {currentSlot}=currentAndNextSlots();
+const sorted=[...commonTimes].sort((a,b)=>localStartMinutes(a[0])-localStartMinutes(b[0]));
+let rows=sorted.map(r=>{
+ const isCurrent=currentSlot&&r[0]===currentSlot.range;
+ return `<div class="${isCurrent?"current-row":""}">${r[0]}</div><div class="${isCurrent?"current-row":""}">${serverRangeToZone(r[0])}</div>`;
+}).join("");
+return `<div class="card"><h2>${tx().common}</h2>
+${statusView()}
+<p class="note">🌐 Server Time = UTC−2<br>📍 ${tx().currentZone}: ${zoneDisplayName()}<br>☀️/❄️ ${tx().dst}</p>
+<p class="rotation-note">↕ ${tx().localOrder}</p>
+<div class="time-scroll"><div class="time-grid"><div class="head">${tx().server}</div><div class="head">${tx().local}</div>${rows}</div></div></div>
+<div class="card"><h3>${tx().rotationShort} 6–7</h3><p>${tx().none}</p></div>`;
 }
 function dayView(k){
 const d=D[k],i=keys.indexOf(k),checks=tr(d.check);
@@ -440,7 +517,7 @@ const done=checks.filter((_,n)=>localStorage.getItem(`dw_${k}_${n}`)==="1").leng
 const pct=Math.round(done/checks.length*100);
 const times=d.times.map(x=>`<div class="task-time"><strong>${timeActivityName(x[0])}</strong><div>🌐 ${tx().server}: ${x[1]}</div><div>📍 ${tx().local}: ${serverRangeToZone(x[1])}</div></div>`).join("");
 const c=checks.map((x,n)=>`<div class="check"><input type="checkbox" id="${k}_${n}" ${localStorage.getItem(`dw_${k}_${n}`)==="1"?"checked":""} onchange="saveCheck('${k}',${n},this.checked)"><label for="${k}_${n}">${x}</label></div>`).join("");
-return `<div class="card"><h2 class="day-title">${d.icon} ${tx().days[i]}</h2><div class="sub">${tr(d.title)}</div></div>
+return `<div class="card"><h2 class="day-title">${d.icon} ${tx().rotationShort} ${i+1}</h2><div class="sub">${tr(d.title)}</div><div class="rotation-note">${tx().rotationNote}</div></div>
 <div class="card"><h3 class="section-title">${tx().main}</h3><ul class="list">${tr(d.main).map(x=>`<li>${x}</li>`).join("")}</ul></div>
 <div class="card"><h3 class="section-title">${tx().procedure}</h3><ol class="list">${tr(d.procedure).map(x=>`<li>${x}</li>`).join("")}</ol></div>
 <div class="card"><h3 class="section-title">${tx().times}</h3>${times}</div>
@@ -452,7 +529,7 @@ function resetDay(k){tr(D[k].check).forEach((_,n)=>localStorage.removeItem(`dw_$
 function renderTabs(){
 const el=document.getElementById("tabs");el.innerHTML="";
 const b=document.createElement("button");b.textContent=tx().common;b.className=current==="time"?"active":"";b.onclick=()=>setTab("time");el.appendChild(b);
-keys.forEach((k,i)=>{const x=document.createElement("button");x.textContent=D[k].icon+" "+tx().days[i];x.className=current===k?"active":"";x.onclick=()=>setTab(k);el.appendChild(x)});
+keys.forEach((k,i)=>{const x=document.createElement("button");x.textContent=D[k].icon+" "+tx().rotationShort+" "+(i+1);x.className=current===k?"active":"";x.onclick=()=>setTab(k);el.appendChild(x)});
 requestAnimationFrame(()=>el.querySelector(".active")?.scrollIntoView({behavior:"smooth",block:"nearest",inline:"center"}));
 }
 function renderLang(){
@@ -472,6 +549,7 @@ function renderAll(){renderLang();renderTimezone();renderTabs();renderMain()}
 document.getElementById("langSelect").addEventListener("change",e=>setLang(e.target.value));
 document.documentElement.dir=lang==="ar"?"rtl":"ltr";
 renderAll();
+setInterval(()=>{if(current==="time")renderMain()},60000);
 </script>
 </body>
 </html>
