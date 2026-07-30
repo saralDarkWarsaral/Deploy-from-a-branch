@@ -165,16 +165,50 @@ footer{font-size:12px;color:var(--muted);text-align:center;padding:24px 8px 8px;
   .tabs button{font-size:14px}
 }
 @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}}
+
+.language-box{
+  display:grid;grid-template-columns:auto minmax(0,1fr);align-items:center;gap:10px;
+  margin-bottom:10px;padding:10px 12px;border:1px solid var(--line);border-radius:16px;
+  background:rgba(17,26,48,.64);
+}
+.language-box label{color:var(--muted);font-size:13px;white-space:nowrap;font-weight:700}
+.language-box select{
+  width:100%;min-width:0;border-radius:12px;padding:11px 38px 11px 12px;
+  color:var(--text);border:1px solid var(--line);
+  background:linear-gradient(180deg,rgba(27,41,70,.94),rgba(17,26,48,.96));
+  font:inherit;outline:none;
+}
+html[dir="rtl"] body{font-family:"Segoe UI",Tahoma,Arial,sans-serif}
+html[dir="rtl"] .language-box,html[dir="rtl"] .timezone-box{grid-template-columns:minmax(0,1fr) auto}
+html[dir="rtl"] .language-box label,html[dir="rtl"] .timezone-box label{text-align:right}
+html[dir="rtl"] .list{padding-left:0;padding-right:1.35em}
+html[dir="rtl"] .check{flex-direction:row-reverse;text-align:right}
+html[dir="rtl"] .tabs{direction:rtl}
+html[dir="rtl"] .task-time{text-align:right}
+
 </style>
 </head>
 <body>
 <div class="app">
 <header>
 <h1>🎮 Dark War VS Guide</h1>
-<div class="lang" id="langBar">
-<button data-lang="ja">🇯🇵 日本語</button>
-<button data-lang="it">🇮🇹 Italiano</button>
-<button data-lang="en">🇬🇧 English</button>
+<div class="language-box">
+<label id="langLabel" for="langSelect">🌐 言語</label>
+<select id="langSelect" aria-label="Language">
+<option value="ja">🇯🇵 日本語</option>
+<option value="en">🇬🇧 English</option>
+<option value="it">🇮🇹 Italiano</option>
+<option value="ar">🇸🇦 العربية</option>
+<option value="ko">🇰🇷 한국어</option>
+<option value="zh-CN">🇨🇳 简体中文</option>
+<option value="zh-TW">🇹🇼 繁體中文</option>
+<option value="es">🇪🇸 Español</option>
+<option value="fr">🇫🇷 Français</option>
+<option value="de">🇩🇪 Deutsch</option>
+<option value="pt">🇵🇹 Português</option>
+<option value="ru">🇷🇺 Русский</option>
+<option value="tr">🇹🇷 Türkçe</option>
+</select>
 </div>
 <div class="timezone-box"><label id="tzLabel" for="tzSelect"></label><select id="tzSelect"></select></div>
 <div class="tabs" id="tabs"></div>
@@ -185,9 +219,19 @@ footer{font-size:12px;color:var(--muted);text-align:center;padding:24px 8px 8px;
 
 <script>
 const T={
-ja:{common:"⏰ 共通時間表",timezone:"タイムゾーン",automatic:"自動（この端末）",local:"あなたの現地時間",currentZone:"現在の設定",main:"🎯 主な内容",procedure:"📋 手順",times:"⏰ 生存軍備",points:"⭐ ポイント",check:"☑ チェックリスト",reset:"チェックをリセット",done:"完了",server:"サーバー",japan:"日本",summer:"イタリア夏",winter:"イタリア冬",america:"アメリカ東部",days:["月曜日","火曜日","水曜日","木曜日","金曜日"],weekend:"土曜日・日曜日",none:"特に指定された内容はありません。",save:"チェック状態はこの端末に保存されます。"},
-it:{common:"⏰ TABELLA ORARIA COMUNE",timezone:"Fuso orario",automatic:"Automatico (questo dispositivo)",local:"La tua ora locale",currentZone:"Impostazione attuale",main:"🎯 ATTIVITÀ PRINCIPALI",procedure:"📋 PROCEDURA",times:"⏰ CASSE SOPRAVVIVENZA",points:"⭐ PUNTI IMPORTANTI",check:"☑ CHECKLIST",reset:"Azzera checklist",done:"Completato",server:"Server",japan:"Giappone",summer:"Italia estate",winter:"Italia inverno",america:"USA orientale",days:["Lunedì","Martedì","Mercoledì","Giovedì","Venerdì"],weekend:"Sabato・Domenica",none:"Non sono indicate attività specifiche.",save:"Lo stato della checklist viene salvato su questo dispositivo."},
-en:{common:"⏰ COMMON TIME TABLE",timezone:"Time zone",automatic:"Automatic (this device)",local:"Your local time",currentZone:"Current setting",main:"🎯 MAIN ACTIVITIES",procedure:"📋 PROCEDURE",times:"⏰ SURVIVAL CHEST TIMES",points:"⭐ IMPORTANT POINTS",check:"☑ CHECKLIST",reset:"Reset checklist",done:"Completed",server:"Server",japan:"Japan",summer:"Italy DST",winter:"Italy Standard",america:"US Eastern",days:["Monday","Tuesday","Wednesday","Thursday","Friday"],weekend:"Saturday・Sunday",none:"No specific activities are listed.",save:"Checklist status is saved on this device."}
+ja:{common:"⏰ 共通時間表",timezone:"タイムゾーン",automatic:"自動（この端末）",local:"あなたの現地時間",currentZone:"現在の設定",main:"🎯 主な内容",procedure:"📋 手順",times:"⏰ 生存軍備",points:"⭐ ポイント",check:"☑ チェックリスト",reset:"チェックをリセット",done:"完了",server:"サーバー",japan:"日本",summer:"イタリア夏",winter:"イタリア冬",america:"アメリカ東部",days:["月曜日","火曜日","水曜日","木曜日","金曜日"],weekend:"土曜日・日曜日",none:"特に指定された内容はありません。",save:"チェック状態はこの端末に保存されます。",dst:"夏時間・冬時間は自動計算されます。"},
+it:{common:"⏰ TABELLA ORARIA COMUNE",timezone:"Fuso orario",automatic:"Automatico (questo dispositivo)",local:"La tua ora locale",currentZone:"Impostazione attuale",main:"🎯 ATTIVITÀ PRINCIPALI",procedure:"📋 PROCEDURA",times:"⏰ CASSE SOPRAVVIVENZA",points:"⭐ PUNTI IMPORTANTI",check:"☑ CHECKLIST",reset:"Azzera checklist",done:"Completato",server:"Server",japan:"Giappone",summer:"Italia estate",winter:"Italia inverno",america:"USA orientale",days:["Lunedì","Martedì","Mercoledì","Giovedì","Venerdì"],weekend:"Sabato・Domenica",none:"Non sono indicate attività specifiche.",save:"Lo stato della checklist viene salvato su questo dispositivo.",dst:"L’ora legale e l’ora solare vengono calcolate automaticamente."},
+en:{common:"⏰ COMMON TIME TABLE",timezone:"Time zone",automatic:"Automatic (this device)",local:"Your local time",currentZone:"Current setting",main:"🎯 MAIN ACTIVITIES",procedure:"📋 PROCEDURE",times:"⏰ SURVIVAL CHEST TIMES",points:"⭐ IMPORTANT POINTS",check:"☑ CHECKLIST",reset:"Reset checklist",done:"Completed",server:"Server",japan:"Japan",summer:"Italy DST",winter:"Italy Standard",america:"US Eastern",days:["Monday","Tuesday","Wednesday","Thursday","Friday"],weekend:"Saturday・Sunday",none:"No specific activities are listed.",save:"Checklist status is saved on this device.",dst:"Daylight saving and standard time are calculated automatically."},
+ar:{common:"⏰ جدول التوقيت العام",timezone:"المنطقة الزمنية",automatic:"تلقائي (هذا الجهاز)",local:"توقيتك المحلي",currentZone:"الإعداد الحالي",main:"🎯 الأنشطة الرئيسية",procedure:"📋 الخطوات",times:"⏰ أوقات صناديق النجاة",points:"⭐ نقاط مهمة",check:"☑ قائمة التحقق",reset:"إعادة تعيين القائمة",done:"مكتمل",server:"الخادم",days:["الاثنين","الثلاثاء","الأربعاء","الخميس","الجمعة"],weekend:"السبت・الأحد",none:"لا توجد أنشطة محددة.",save:"يتم حفظ حالة قائمة التحقق على هذا الجهاز.",dst:"يتم حساب التوقيت الصيفي والشتوي تلقائيًا."},
+ko:{common:"⏰ 공통 시간표",timezone:"시간대",automatic:"자동(이 기기)",local:"내 현지 시간",currentZone:"현재 설정",main:"🎯 주요 활동",procedure:"📋 절차",times:"⏰ 생존 상자 시간",points:"⭐ 중요 포인트",check:"☑ 체크리스트",reset:"체크 초기화",done:"완료",server:"서버",days:["월요일","화요일","수요일","목요일","금요일"],weekend:"토요일・일요일",none:"지정된 활동이 없습니다.",save:"체크 상태는 이 기기에 저장됩니다.",dst:"서머타임과 표준시는 자동으로 계산됩니다."},
+"zh-CN":{common:"⏰ 通用时间表",timezone:"时区",automatic:"自动（此设备）",local:"你的当地时间",currentZone:"当前设置",main:"🎯 主要活动",procedure:"📋 步骤",times:"⏰ 生存宝箱时间",points:"⭐ 重要提示",check:"☑ 检查清单",reset:"重置清单",done:"已完成",server:"服务器",days:["星期一","星期二","星期三","星期四","星期五"],weekend:"星期六・星期日",none:"没有指定活动。",save:"清单状态保存在此设备上。",dst:"夏令时和标准时间会自动计算。"},
+"zh-TW":{common:"⏰ 通用時間表",timezone:"時區",automatic:"自動（此裝置）",local:"你的當地時間",currentZone:"目前設定",main:"🎯 主要活動",procedure:"📋 步驟",times:"⏰ 生存寶箱時間",points:"⭐ 重要提示",check:"☑ 檢查清單",reset:"重設清單",done:"已完成",server:"伺服器",days:["星期一","星期二","星期三","星期四","星期五"],weekend:"星期六・星期日",none:"沒有指定活動。",save:"清單狀態會儲存在此裝置。",dst:"夏令時間與標準時間會自動計算。"},
+es:{common:"⏰ HORARIO COMÚN",timezone:"Zona horaria",automatic:"Automático (este dispositivo)",local:"Tu hora local",currentZone:"Configuración actual",main:"🎯 ACTIVIDADES PRINCIPALES",procedure:"📋 PROCEDIMIENTO",times:"⏰ HORARIOS DE COFRES",points:"⭐ PUNTOS IMPORTANTES",check:"☑ LISTA DE CONTROL",reset:"Reiniciar lista",done:"Completado",server:"Servidor",days:["Lunes","Martes","Miércoles","Jueves","Viernes"],weekend:"Sábado・Domingo",none:"No hay actividades específicas.",save:"El estado de la lista se guarda en este dispositivo.",dst:"El horario de verano y el estándar se calculan automáticamente."},
+fr:{common:"⏰ TABLEAU HORAIRE COMMUN",timezone:"Fuseau horaire",automatic:"Automatique (cet appareil)",local:"Votre heure locale",currentZone:"Réglage actuel",main:"🎯 ACTIVITÉS PRINCIPALES",procedure:"📋 PROCÉDURE",times:"⏰ HORAIRES DES COFFRES",points:"⭐ POINTS IMPORTANTS",check:"☑ LISTE DE CONTRÔLE",reset:"Réinitialiser",done:"Terminé",server:"Serveur",days:["Lundi","Mardi","Mercredi","Jeudi","Vendredi"],weekend:"Samedi・Dimanche",none:"Aucune activité spécifique n’est indiquée.",save:"La liste est enregistrée sur cet appareil.",dst:"L’heure d’été et l’heure standard sont calculées automatiquement."},
+de:{common:"⏰ GEMEINSAME ZEITTABELLE",timezone:"Zeitzone",automatic:"Automatisch (dieses Gerät)",local:"Deine Ortszeit",currentZone:"Aktuelle Einstellung",main:"🎯 HAUPTAKTIVITÄTEN",procedure:"📋 ABLAUF",times:"⏰ ÜBERLEBENSKISTEN-ZEITEN",points:"⭐ WICHTIGE PUNKTE",check:"☑ CHECKLISTE",reset:"Checkliste zurücksetzen",done:"Erledigt",server:"Server",days:["Montag","Dienstag","Mittwoch","Donnerstag","Freitag"],weekend:"Samstag・Sonntag",none:"Keine besonderen Aktivitäten angegeben.",save:"Der Checklistenstatus wird auf diesem Gerät gespeichert.",dst:"Sommer- und Winterzeit werden automatisch berechnet."},
+pt:{common:"⏰ TABELA DE HORÁRIOS",timezone:"Fuso horário",automatic:"Automático (este dispositivo)",local:"Sua hora local",currentZone:"Configuração atual",main:"🎯 ATIVIDADES PRINCIPAIS",procedure:"📋 PROCEDIMENTO",times:"⏰ HORÁRIOS DOS BAÚS",points:"⭐ PONTOS IMPORTANTES",check:"☑ LISTA DE VERIFICAÇÃO",reset:"Redefinir lista",done:"Concluído",server:"Servidor",days:["Segunda","Terça","Quarta","Quinta","Sexta"],weekend:"Sábado・Domingo",none:"Não há atividades específicas.",save:"O estado da lista é salvo neste dispositivo.",dst:"O horário de verão e o padrão são calculados automaticamente."},
+ru:{common:"⏰ ОБЩАЯ ТАБЛИЦА ВРЕМЕНИ",timezone:"Часовой пояс",automatic:"Автоматически (это устройство)",local:"Ваше местное время",currentZone:"Текущая настройка",main:"🎯 ОСНОВНЫЕ ДЕЙСТВИЯ",procedure:"📋 ПОРЯДОК",times:"⏰ ВРЕМЯ СУНДУКОВ",points:"⭐ ВАЖНЫЕ МОМЕНТЫ",check:"☑ СПИСОК ПРОВЕРКИ",reset:"Сбросить список",done:"Выполнено",server:"Сервер",days:["Понедельник","Вторник","Среда","Четверг","Пятница"],weekend:"Суббота・Воскресенье",none:"Особые действия не указаны.",save:"Состояние списка сохраняется на этом устройстве.",dst:"Летнее и стандартное время рассчитываются автоматически."},
+tr:{common:"⏰ ORTAK SAAT TABLOSU",timezone:"Saat dilimi",automatic:"Otomatik (bu cihaz)",local:"Yerel saatiniz",currentZone:"Geçerli ayar",main:"🎯 ANA ETKİNLİKLER",procedure:"📋 İŞLEM",times:"⏰ HAYATTA KALMA SANDIĞI SAATLERİ",points:"⭐ ÖNEMLİ NOKTALAR",check:"☑ KONTROL LİSTESİ",reset:"Listeyi sıfırla",done:"Tamamlandı",server:"Sunucu",days:["Pazartesi","Salı","Çarşamba","Perşembe","Cuma"],weekend:"Cumartesi・Pazar",none:"Belirli bir etkinlik belirtilmemiştir.",save:"Kontrol listesi durumu bu cihazda saklanır.",dst:"Yaz saati ve standart saat otomatik hesaplanır."}
 };
 
 const commonTimes=[
@@ -273,20 +317,85 @@ check:{ja:["車を強化する","エネルギーコアを使う","チップ宝�
 }
 };
 
+
+const LANGUAGE_LABELS={
+ja:"🌐 言語",en:"🌐 Language",it:"🌐 Lingua",ar:"🌐 اللغة",ko:"🌐 언어",
+"zh-CN":"🌐 语言","zh-TW":"🌐 語言",es:"🌐 Idioma",fr:"🌐 Langue",
+de:"🌐 Sprache",pt:"🌐 Idioma",ru:"🌐 Язык",tr:"🌐 Dil"
+};
+const LOCALES={ja:"ja-JP",it:"it-IT",en:"en-GB",ar:"ar-SA",ko:"ko-KR","zh-CN":"zh-CN","zh-TW":"zh-TW",es:"es-ES",fr:"fr-FR",de:"de-DE",pt:"pt-PT",ru:"ru-RU",tr:"tr-TR"};
+const ACT={
+construction:{ja:"🏗 建築",it:"🏗 Costruzione",en:"🏗 Construction",ar:"🏗 البناء",ko:"🏗 건설","zh-CN":"🏗 建设","zh-TW":"🏗 建設",es:"🏗 Construcción",fr:"🏗 Construction",de:"🏗 Bau",pt:"🏗 Construção",ru:"🏗 Строительство",tr:"🏗 İnşaat"},
+training:{ja:"🪖 訓練",it:"🪖 Addestramento",en:"🪖 Training",ar:"🪖 التدريب",ko:"🪖 훈련","zh-CN":"🪖 训练","zh-TW":"🪖 訓練",es:"🪖 Entrenamiento",fr:"🪖 Entraînement",de:"🪖 Ausbildung",pt:"🪖 Treinamento",ru:"🪖 Обучение",tr:"🪖 Eğitim"},
+research:{ja:"🔬 研究",it:"🔬 Ricerca",en:"🔬 Research",ar:"🔬 البحث",ko:"🔬 연구","zh-CN":"🔬 研究","zh-TW":"🔬 研究",es:"🔬 Investigación",fr:"🔬 Recherche",de:"🔬 Forschung",pt:"🔬 Pesquisa",ru:"🔬 Исследование",tr:"🔬 Araştırma"},
+chemical:{ja:"🔬 化学研究",it:"🔬 Ricerca chimica",en:"🔬 Chemical Research",ar:"🔬 البحث الكيميائي",ko:"🔬 화학 연구","zh-CN":"🔬 化学研究","zh-TW":"🔬 化學研究",es:"🔬 Investigación química",fr:"🔬 Recherche chimique",de:"🔬 Chemische Forschung",pt:"🔬 Pesquisa química",ru:"🔬 Химическое исследование",tr:"🔬 Kimyasal araştırma"},
+summons100:{ja:"🎟 100連ガチャ",it:"🎟 100 evocazioni",en:"🎟 100 Summons",ar:"🎟 100 استدعاء",ko:"🎟 100회 소환","zh-CN":"🎟 100次召唤","zh-TW":"🎟 100次召喚",es:"🎟 100 invocaciones",fr:"🎟 100 invocations",de:"🎟 100 Beschwörungen",pt:"🎟 100 invocações",ru:"🎟 100 призывов",tr:"🎟 100 çağırma"},
+summonFragments:{ja:"🦸 100連・ヒーロー欠片",it:"🦸 Evocazioni o Frammenti Eroe",en:"🦸 Summons or Hero Fragments",ar:"🦸 الاستدعاءات أو شظايا الأبطال",ko:"🦸 소환 또는 영웅 조각","zh-CN":"🦸 召唤或英雄碎片","zh-TW":"🦸 召喚或英雄碎片",es:"🦸 Invocaciones o fragmentos",fr:"🦸 Invocations ou fragments",de:"🦸 Beschwörungen oder Fragmente",pt:"🦸 Invocações ou fragmentos",ru:"🦸 Призывы или фрагменты",tr:"🦸 Çağırmalar veya kahraman parçaları"},
+heroChest:{ja:"📦 ヒーロー装備宝箱",it:"📦 Cassa Equipaggiamento Eroe",en:"📦 Hero Equipment Chest",ar:"📦 صندوق معدات الأبطال",ko:"📦 영웅 장비 상자","zh-CN":"📦 英雄装备宝箱","zh-TW":"📦 英雄裝備寶箱",es:"📦 Cofre de equipo de héroe",fr:"📦 Coffre d’équipement de héros",de:"📦 Heldenausrüstungskiste",pt:"📦 Baú de equipamento de herói",ru:"📦 Сундук снаряжения героя",tr:"📦 Kahraman ekipman sandığı"},
+vehicle:{ja:"🚗 車強化",it:"🚗 Potenziamento Veicoli",en:"🚗 Vehicle Upgrades",ar:"🚗 تطوير المركبات",ko:"🚗 차량 강화","zh-CN":"🚗 车辆强化","zh-TW":"🚗 車輛強化",es:"🚗 Mejora de vehículos",fr:"🚗 Amélioration des véhicules",de:"🚗 Fahrzeugverbesserung",pt:"🚗 Melhoria de veículos",ru:"🚗 Улучшение транспорта",tr:"🚗 Araç geliştirme"},
+vehicleCoreChip:{ja:"🚗 車強化・⚡エネルギーコア・💾チップ宝箱",it:"🚗 Veicoli・⚡ Core Energetici・💾 Casse Chip",en:"🚗 Vehicle Upgrades・⚡ Energy Cores・💾 Chip Chests",ar:"🚗 المركبات・⚡ نوى الطاقة・💾 صناديق الشرائح",ko:"🚗 차량 강화・⚡ 에너지 코어・💾 칩 상자","zh-CN":"🚗 车辆强化・⚡ 能量核心・💾 芯片宝箱","zh-TW":"🚗 車輛強化・⚡ 能量核心・💾 晶片寶箱",es:"🚗 Vehículos・⚡ Núcleos de energía・💾 Cofres de chips",fr:"🚗 Véhicules・⚡ Noyaux d’énergie・💾 Coffres de puces",de:"🚗 Fahrzeuge・⚡ Energiekerne・💾 Chipkisten",pt:"🚗 Veículos・⚡ Núcleos de energia・💾 Baús de chips",ru:"🚗 Транспорт・⚡ Энергетические ядра・💾 Сундуки чипов",tr:"🚗 Araçlar・⚡ Enerji çekirdekleri・💾 Çip sandıkları"},
+trainingAnimal:{ja:"🪖 訓練・🐾ペット強化",it:"🪖 Addestramento・🐾 Potenziamento Animali",en:"🪖 Training・🐾 Animal Upgrades",ar:"🪖 التدريب・🐾 تطوير الحيوانات",ko:"🪖 훈련・🐾 동물 강화","zh-CN":"🪖 训练・🐾 动物强化","zh-TW":"🪖 訓練・🐾 動物強化",es:"🪖 Entrenamiento・🐾 Mejora de animales",fr:"🪖 Entraînement・🐾 Amélioration des animaux",de:"🪖 Ausbildung・🐾 Tierverbesserung",pt:"🪖 Treinamento・🐾 Melhoria de animais",ru:"🪖 Обучение・🐾 Улучшение животных",tr:"🪖 Eğitim・🐾 Hayvan geliştirme"}
+};
+function timeActivityName(raw){
+ if(raw.includes("100連ガチャ"))return ACT.summons100[lang]||ACT.summons100.en;
+ if(raw.includes("100連・欠片"))return ACT.summonFragments[lang]||ACT.summonFragments.en;
+ if(raw.includes("ヒーロー装備宝箱"))return ACT.heroChest[lang]||ACT.heroChest.en;
+ if(raw.includes("車強化・⚡"))return ACT.vehicleCoreChip[lang]||ACT.vehicleCoreChip.en;
+ if(raw.includes("訓練・🐾"))return ACT.trainingAnimal[lang]||ACT.trainingAnimal.en;
+ if(raw.includes("化学研究"))return ACT.chemical[lang]||ACT.chemical.en;
+ if(raw.includes("車強化"))return ACT.vehicle[lang]||ACT.vehicle.en;
+ if(raw.includes("建築"))return ACT.construction[lang]||ACT.construction.en;
+ if(raw.includes("訓練"))return ACT.training[lang]||ACT.training.en;
+ if(raw.includes("研究"))return ACT.research[lang]||ACT.research.en;
+ return raw;
+}
+function tr(obj){return (obj&&obj[lang])||(obj&&obj.en)||(obj&&obj.ja)||[]}
+
+
+D.monday.title.ar="الجمع・البناء・البحث الكيميائي";
+D.monday.main.ar=["🌲 جمع الموارد","🏗 البناء","🔬 البحث الكيميائي"];
+D.monday.procedure.ar=["من مساء الأحد، أرسل جميع الفرق لجمع الموارد.","اضبط الوقت بحيث تعود الفرق بعد إعادة ضبط يوم الخادم.","اجمع الخشب أو الحجر أو الكهرباء. يُنصح بالمستوى 8. لا تختر العملات.","احصل على تعزيز وزير الزراعة ثم واصل الجمع.","قبل نهاية يوم الخادم، تأكد من عودة جميع الفرق واستدعها يدويًا عند الحاجة.","عندما يكون عدد كبير من اللاعبين متصلًا، أكملوا 50 زومبي يوميًا معًا أو اترك فريقًا واحدًا للراليات."];
+D.monday.points.ar=["يمكن الحصول على نحو 2M نقطة من الجمع وحده.","إذا كنت VIP7 أو أعلى، يمكنك تغيير السمة ونقل البناء أو البحث إلى وقت أنسب.","يُنصح بتنفيذ الأنشطة أثناء تفعيل جميع تعزيزات الرئاسة."];
+D.monday.check.ar=["إرسال الفرق للجمع من يوم الأحد","اختيار الخشب أو الحجر أو الكهرباء","تفضيل موارد المستوى 8","عدم جمع العملات","الحصول على تعزيز وزير الزراعة","التحقق من عودة الفرق","تنفيذ البناء","تنفيذ البحث الكيميائي"];
+D.tuesday.title.ar="تطوير الأبطال・الرادار";
+D.tuesday.main.ar=["🦸 تطوير الأبطال","🎟 استدعاء الأبطال","👑 الرادار"];
+D.tuesday.procedure.ar=["النشاط الرئيسي هو استدعاء الأبطال.","ابدأ بتجميع مهام الرادار من يوم الأحد.","في نهاية الاثنين، ارفع الرادار إلى الحد الأقصى.","إذا كان لديك Catherine أو Alex، فاستخدمهما بعد وصول الرادار إلى الحد الأقصى.","ادخر 200 ميدالية على الأقل لاستخدامها يوم الثلاثاء.","الاستدعاءات تمنح نقاط VS يوم الثلاثاء فقط."];
+D.tuesday.points.ar=["إذا كنت VIP7 أو أعلى، يمكنك تغيير السمة.","يمكنك نقل تطوير الأبطال إلى فترة زمنية أخرى.","اختيار التدريب في فترة الخادم 15:00–19:00 قد يسمح بفتح الصناديق دون إكمال جميع أنشطة الأبطال."];
+D.tuesday.check.ar=["تجميع الرادار من يوم الأحد","رفع الرادار إلى الحد الأقصى قبل الثلاثاء","استخدام Catherine أو Alex بعد الحد الأقصى","ادخار 200 ميدالية على الأقل","تنفيذ 100 استدعاء","استخدام شظايا الأبطال"];
+D.wednesday.title.ar="تدريب الجنود・معدات الأبطال";
+D.wednesday.main.ar=["🪖 تدريب الجنود","📦 صندوق معدات الأبطال","🚚 شاحنات الذهب الأسود رتبة S","🎯 مهام سرية رتبة S"];
+D.wednesday.procedure.ar=["درّب جنود السمة الرئيسية.","احصل على تعزيز الرئاسة قبل التدريب؛ يمكن أن يوفر نحو ساعة.","استخدم فقط المهام السرية وشاحنات الذهب الأسود من رتبة S.","يمكن الحصول على نقاط باستخدام نوى الطاقة، لكن استخدم صناديق معدات الأبطال أولًا.","انتظر حتى تجمع 100 صندوق على الأقل قبل فتحها.","فتح 100 صندوق أو أكثر معًا يزيد فرصة الحصول على معدات برتقالية."];
+D.wednesday.points.ar=["إذا كنت VIP7 أو أعلى، يمكنك تغيير السمة.","اختيار التدريب في فترة أخرى قد يسمح بإكمال الصناديق دون استخدام صندوق معدات الأبطال.","الأربعاء مخصص أساسًا للتدريب؛ زيادة عدد الجنود ترفع قوة البرج."];
+D.wednesday.check.ar=["تدريب الجنود الرئيسيين","الحصول على تعزيز الرئاسة","استخدام المهام السرية رتبة S فقط","استخدام شاحنات الذهب الأسود رتبة S فقط","تجميع 100 صندوق على الأقل","فتح صناديق معدات الأبطال","استخدام نوى الطاقة عند الحاجة فقط"];
+D.thursday.title.ar="زومبي الرالي・الرادار・المركبات";
+D.thursday.main.ar=["🧟 زومبي رالي مستوى 20+","👑 الرادار","🚗 تطوير المركبات","🏗 البناء","🔬 البحث"];
+D.thursday.procedure.ar=["استخدم الرادار كما في يوم الثلاثاء.","اهزم باستمرار زومبي الرالي من المستوى 20 أو أعلى.","اجمع تذاكر الأبطال وصناديق التسريع والماس والتروس والتسريعات والموارد واللحم.","استخدم الفريق الرئيسي للراليات الأعلى مستوى؛ وإذا كان الوقت محدودًا استخدم الفريق الثاني أو الثالث.","الهدف المقترح نحو 1M نقطة. عوّض النقص بالبناء أو البحث أو تطوير المركبات.","لا تستخدم ميداليات الحكمة في بحث الخميس؛ فهي لا تمنح نقاط VS في ذلك اليوم."];
+D.thursday.points.ar=["رالي الزومبي يوم الخميس يتوافق جيدًا جدًا مع VS.","لتوفير الموارد استخدم الفريق الأول فقط؛ وللسرعة أو نقاط أكثر وزّع الفرق.","الموضوع الرئيسي يوم الخميس هو صيد الزومبي."];
+D.thursday.check.ar=["استخدام الرادار","هزيمة زومبي رالي مستوى 20+","ادخار تذاكر الأبطال","ادخار التسريعات","ادخار التروس","استخدام عدة فرق عند الحاجة","عدم استخدام ميداليات الحكمة","تعويض النقاط الناقصة"];
+D.friday.title.ar="استخدام العناصر・التطوير";
+D.friday.main.ar=["🏗 البناء","🦸 تطوير الأبطال","🔬 البحث الكيميائي","🚗 تطوير المركبات","⚡ نوى الطاقة","💾 صناديق الشرائح","🐾 تطوير الحيوانات"];
+D.friday.procedure.ar=["يُنصح بتنفيذ أعمال البناء الطويلة يوم الاثنين أو الجمعة.","الاستدعاءات تمنح نقاطًا يوم الثلاثاء فقط، لذلك لا تستخدم تذاكر الاستدعاء يوم الجمعة.","الأبحاث التي تستخدم ميداليات الحكمة تمنح نقاطًا يومي الاثنين والجمعة.","وزّع مواد المركبات بين الخميس والجمعة.","يُفضل استخدام نوى الطاقة يومي الأربعاء والجمعة.","افتح صناديق الشرائح معًا يوم الجمعة.","تطوير الحيوانات يمنح نقاطًا أثناء فترة التدريب يوم الجمعة فقط."];
+D.friday.points.ar=["الجمعة هو اليوم الرئيسي لاستخدام العناصر.","يُنصح خصوصًا بتطوير المركبات والبناء والبحث الكيميائي.","يُفضل تطوير الأبطال يوم الثلاثاء.","إذا كنت VIP7 أو أعلى، يمكنك تغيير السمة."];
+D.friday.check.ar=["تطوير المركبات","استخدام نوى الطاقة","فتح صناديق الشرائح","تنفيذ البناء","تنفيذ البحث الكيميائي","استخدام ميداليات الحكمة","تدريب الجنود","تطوير الحيوانات","ادخار تذاكر الاستدعاء"];
+
 let lang=localStorage.getItem("dw_lang")||"ja";
 let current=localStorage.getItem("dw_tab")||"time";
 const keys=["monday","tuesday","wednesday","thursday","friday"];
 const deviceZone=Intl.DateTimeFormat().resolvedOptions().timeZone||"UTC";
 let selectedZone=localStorage.getItem("dw_timezone")||"auto";
 const zoneOptions=[
-  ["auto",null],
-  ["Asia/Tokyo","Asia/Tokyo"],
-  ["Europe/Rome","Europe/Rome"],
-  ["America/New_York","America/New_York"],
-  ["America/Chicago","America/Chicago"],
-  ["America/Denver","America/Denver"],
-  ["America/Los_Angeles","America/Los_Angeles"],
-  ["UTC","UTC"]
+["auto",null],["Asia/Tokyo","Asia/Tokyo"],["Asia/Seoul","Asia/Seoul"],
+["Asia/Shanghai","Asia/Shanghai"],["Asia/Taipei","Asia/Taipei"],
+["Europe/Rome","Europe/Rome"],["Europe/London","Europe/London"],
+["Europe/Paris","Europe/Paris"],["Europe/Berlin","Europe/Berlin"],
+["Europe/Madrid","Europe/Madrid"],["Europe/Lisbon","Europe/Lisbon"],
+["Europe/Moscow","Europe/Moscow"],["Europe/Istanbul","Europe/Istanbul"],
+["Asia/Riyadh","Asia/Riyadh"],["Asia/Dubai","Asia/Dubai"],
+["Asia/Kolkata","Asia/Kolkata"],["Asia/Bangkok","Asia/Bangkok"],
+["Asia/Ho_Chi_Minh","Asia/Ho_Chi_Minh"],["Asia/Jakarta","Asia/Jakarta"],
+["America/New_York","America/New_York"],["America/Chicago","America/Chicago"],
+["America/Denver","America/Denver"],["America/Los_Angeles","America/Los_Angeles"],
+["America/Sao_Paulo","America/Sao_Paulo"],["UTC","UTC"]
 ];
 const zoneLabels={
   ja:{"Asia/Tokyo":"日本","Europe/Rome":"イタリア","America/New_York":"米国東部","America/Chicago":"米国中部","America/Denver":"米国山岳部","America/Los_Angeles":"米国太平洋","UTC":"UTC"},
@@ -294,9 +403,14 @@ const zoneLabels={
   en:{"Asia/Tokyo":"Japan","Europe/Rome":"Italy","America/New_York":"US Eastern","America/Chicago":"US Central","America/Denver":"US Mountain","America/Los_Angeles":"US Pacific","UTC":"UTC"}
 };
 
-function tx(){return T[lang]}
+function tx(){return T[lang]||T.en}
 function activeZone(){return selectedZone==="auto"?deviceZone:selectedZone}
-function setLang(v){lang=v;localStorage.setItem("dw_lang",v);document.documentElement.lang=v;renderAll()}
+function setLang(v){
+ lang=v;localStorage.setItem("dw_lang",v);
+ document.documentElement.lang=v;
+ document.documentElement.dir=v==="ar"?"rtl":"ltr";
+ renderAll();
+}
 function setTab(v){current=v;localStorage.setItem("dw_tab",v);renderAll()}
 function setZone(v){selectedZone=v;localStorage.setItem("dw_timezone",v);renderAll()}
 function serverRangeToZone(range,zone=activeZone()){
@@ -307,50 +421,56 @@ function serverRangeToZone(range,zone=activeZone()){
   const start=Date.UTC(y,mo,d,Number(m[1])+2,Number(m[2])); // Server time = UTC−2
   let end=Date.UTC(y,mo,d,Number(m[3])+2,Number(m[4]));
   if(end<=start)end+=86400000;
-  const locale=lang==="ja"?"ja-JP":lang==="it"?"it-IT":"en-GB";
+  const locale=LOCALES[lang]||"en-GB";
   const fmt=new Intl.DateTimeFormat(locale,{timeZone:zone,hour:"2-digit",minute:"2-digit",hour12:false});
   return `${fmt.format(new Date(start))}–${fmt.format(new Date(end))}`;
 }
 function zoneDisplayName(){
   const z=activeZone();
   if(selectedZone==="auto")return `${tx().automatic}: ${z}`;
-  return `${zoneLabels[lang][z]||z} (${z})`;
+  return `${((zoneLabels[lang]||zoneLabels.en)[z]||z)} (${z})`;
 }
 function commonView(){
 let rows=commonTimes.map(r=>`<div>${r[0]}</div><div>${serverRangeToZone(r[0])}</div>`).join("");
-return `<div class="card"><h2>${tx().common}</h2><p class="note">🌐 Server Time = UTC−2<br>📍 ${tx().currentZone}: ${zoneDisplayName()}<br>☀️/❄️ ${lang==="ja"?"夏時間・冬時間は自動計算されます。":lang==="it"?"L’ora legale e l’ora solare vengono calcolate automaticamente.":"Daylight saving and standard time are calculated automatically."}</p><div class="time-scroll"><div class="time-grid"><div class="head">${tx().server}</div><div class="head">${tx().local}</div>${rows}</div></div></div><div class="card"><h3>${tx().weekend}</h3><p>${tx().none}</p></div>`;
+return `<div class="card"><h2>${tx().common}</h2><p class="note">🌐 Server Time = UTC−2<br>📍 ${tx().currentZone}: ${zoneDisplayName()}<br>☀️/❄️ ${tx().dst}</p><div class="time-scroll"><div class="time-grid"><div class="head">${tx().server}</div><div class="head">${tx().local}</div>${rows}</div></div></div><div class="card"><h3>${tx().weekend}</h3><p>${tx().none}</p></div>`;
 }
 function dayView(k){
-const d=D[k],i=keys.indexOf(k),checks=d.check[lang];
+const d=D[k],i=keys.indexOf(k),checks=tr(d.check);
 const done=checks.filter((_,n)=>localStorage.getItem(`dw_${k}_${n}`)==="1").length;
 const pct=Math.round(done/checks.length*100);
-const times=d.times.map(x=>`<div class="task-time"><strong>${x[0]}</strong><div>🌐 ${tx().server}: ${x[1]}</div><div>📍 ${tx().local}: ${serverRangeToZone(x[1])}</div></div>`).join("");
+const times=d.times.map(x=>`<div class="task-time"><strong>${timeActivityName(x[0])}</strong><div>🌐 ${tx().server}: ${x[1]}</div><div>📍 ${tx().local}: ${serverRangeToZone(x[1])}</div></div>`).join("");
 const c=checks.map((x,n)=>`<div class="check"><input type="checkbox" id="${k}_${n}" ${localStorage.getItem(`dw_${k}_${n}`)==="1"?"checked":""} onchange="saveCheck('${k}',${n},this.checked)"><label for="${k}_${n}">${x}</label></div>`).join("");
-return `<div class="card"><h2 class="day-title">${d.icon} ${tx().days[i]}</h2><div class="sub">${d.title[lang]}</div></div>
-<div class="card"><h3 class="section-title">${tx().main}</h3><ul class="list">${d.main[lang].map(x=>`<li>${x}</li>`).join("")}</ul></div>
-<div class="card"><h3 class="section-title">${tx().procedure}</h3><ol class="list">${d.procedure[lang].map(x=>`<li>${x}</li>`).join("")}</ol></div>
+return `<div class="card"><h2 class="day-title">${d.icon} ${tx().days[i]}</h2><div class="sub">${tr(d.title)}</div></div>
+<div class="card"><h3 class="section-title">${tx().main}</h3><ul class="list">${tr(d.main).map(x=>`<li>${x}</li>`).join("")}</ul></div>
+<div class="card"><h3 class="section-title">${tx().procedure}</h3><ol class="list">${tr(d.procedure).map(x=>`<li>${x}</li>`).join("")}</ol></div>
 <div class="card"><h3 class="section-title">${tx().times}</h3>${times}</div>
-<div class="card"><h3 class="section-title">${tx().points}</h3><ul class="list">${d.points[lang].map(x=>`<li>${x}</li>`).join("")}</ul></div>
+<div class="card"><h3 class="section-title">${tx().points}</h3><ul class="list">${tr(d.points).map(x=>`<li>${x}</li>`).join("")}</ul></div>
 <div class="card"><h3 class="section-title">${tx().check}</h3><div>${tx().done}: <strong>${done}/${checks.length}</strong> (${pct}%)</div><div class="progress"><span style="width:${pct}%"></span></div>${c}<div class="actions"><button onclick="resetDay('${k}')">${tx().reset}</button></div></div>`;
 }
 function saveCheck(k,n,v){localStorage.setItem(`dw_${k}_${n}`,v?"1":"0");renderMain()}
-function resetDay(k){D[k].check[lang].forEach((_,n)=>localStorage.removeItem(`dw_${k}_${n}`));renderMain()}
+function resetDay(k){tr(D[k].check).forEach((_,n)=>localStorage.removeItem(`dw_${k}_${n}`));renderMain()}
 function renderTabs(){
 const el=document.getElementById("tabs");el.innerHTML="";
 const b=document.createElement("button");b.textContent=tx().common;b.className=current==="time"?"active":"";b.onclick=()=>setTab("time");el.appendChild(b);
 keys.forEach((k,i)=>{const x=document.createElement("button");x.textContent=D[k].icon+" "+tx().days[i];x.className=current===k?"active":"";x.onclick=()=>setTab(k);el.appendChild(x)});
 requestAnimationFrame(()=>el.querySelector(".active")?.scrollIntoView({behavior:"smooth",block:"nearest",inline:"center"}));
 }
-function renderLang(){document.querySelectorAll("#langBar button").forEach(b=>b.classList.toggle("active",b.dataset.lang===lang))}
+function renderLang(){
+ const s=document.getElementById("langSelect");
+ if(s)s.value=lang;
+ const label=document.getElementById("langLabel");
+ if(label)label.textContent=LANGUAGE_LABELS[lang]||LANGUAGE_LABELS.en;
+}
 function renderTimezone(){
   document.getElementById("tzLabel").textContent=tx().timezone+":";
   const sel=document.getElementById("tzSelect");
-  sel.innerHTML=zoneOptions.map(([value,zone])=>`<option value="${value}" ${selectedZone===value?"selected":""}>${value==="auto"?tx().automatic:(zoneLabels[lang][zone]||zone)}</option>`).join("");
+  sel.innerHTML=zoneOptions.map(([value,zone])=>`<option value="${value}" ${selectedZone===value?"selected":""}>${value==="auto"?tx().automatic:(((zoneLabels[lang]||zoneLabels.en)[zone])||zone.replaceAll("_"," "))}</option>`).join("");
   sel.onchange=e=>setZone(e.target.value);
 }
 function renderMain(){document.getElementById("main").innerHTML=current==="time"?commonView():dayView(current);document.getElementById("footer").textContent=tx().save}
 function renderAll(){renderLang();renderTimezone();renderTabs();renderMain()}
-document.querySelectorAll("#langBar button").forEach(b=>b.onclick=()=>setLang(b.dataset.lang));
+document.getElementById("langSelect").addEventListener("change",e=>setLang(e.target.value));
+document.documentElement.dir=lang==="ar"?"rtl":"ltr";
 renderAll();
 </script>
 </body>
