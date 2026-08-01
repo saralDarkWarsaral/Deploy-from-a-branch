@@ -293,14 +293,28 @@ body{padding-bottom:78px}
   .schedule-time .local{font-size:20px}
 }
 
+
+.compact-control label{font-size:18px}
+.language-box{grid-template-columns:28px minmax(0,1fr)}
+.language-box label{font-size:18px;text-align:center}
+.timezone-box{grid-template-columns:28px minmax(0,1fr)}
+.tab-shell{display:grid;grid-template-columns:34px minmax(0,1fr) 34px;gap:6px;align-items:center}
+.tab-arrow{width:34px;height:38px;border-radius:11px;border:1px solid var(--line);background:linear-gradient(180deg,#183549,#0f2638);color:#72e2da;font-weight:900;font-size:15px;padding:0}
+.tab-arrow:disabled{opacity:.28}
+.tabs{overflow-x:auto;scrollbar-width:none;scroll-snap-type:x proximity}
+.tabs::-webkit-scrollbar{display:none}
+.tabs button{scroll-snap-align:start}
+.brand-link{border-radius:14px;padding:3px 5px;margin:-3px -5px}
+.brand-link:hover,.brand-link:focus{background:rgba(112,226,218,.08);outline:none}
+
 </style>
 </head>
 <body>
 <div class="app">
 <header>
-<a class="brand-link" id="homeBanner"><h1>🎮 Dark War VS Guide</h1></a>
+<a class="brand-link" id="homeBanner" href="#" aria-label="Home"><h1>🎮 Dark War VS Guide</h1></a>
 <div class="language-box">
-<label id="langLabel" for="langSelect">🌐 言語</label>
+<label id="langLabel" for="langSelect" aria-label="Language">🌐</label>
 <select id="langSelect" aria-label="Language">
 <option value="ja">🇯🇵 日本語</option>
 <option value="en">🇬🇧 English</option>
@@ -317,8 +331,12 @@ body{padding-bottom:78px}
 <option value="tr">🇹🇷 Türkçe</option>
 </select>
 </div>
-<div class="timezone-box"><label id="tzLabel" for="tzSelect"></label><select id="tzSelect"></select></div>
+<div class="timezone-box compact-control"><label id="tzLabel" for="tzSelect">🕒</label><select id="tzSelect"></select></div>
+<div class="tab-shell">
+<button class="tab-arrow" id="tabPrev" aria-label="Previous">◀</button>
 <div class="tabs" id="tabs"></div>
+<button class="tab-arrow" id="tabNext" aria-label="Next">▶</button>
+</div>
 </header>
 <main id="main"></main>
 <footer id="footer"></footer>
@@ -684,7 +702,7 @@ const done=checks.filter((_,n)=>localStorage.getItem(`dw_${k}_${n}`)==="1").leng
 const pct=Math.round(done/checks.length*100);
 const times=d.times.map(x=>`<div class="task-time"><strong>${timeActivityName(x[0])}</strong><div>🌐 ${tx().server}: ${x[1]}</div><div>📍 ${tx().local}: ${serverRangeToZone(x[1])}</div></div>`).join("");
 const c=checks.map((x,n)=>`<div class="check"><input type="checkbox" id="${k}_${n}" ${localStorage.getItem(`dw_${k}_${n}`)==="1"?"checked":""} onchange="saveCheck('${k}',${n},this.checked)"><label for="${k}_${n}">${x}</label></div>`).join("");
-return `<div class="card"><h2 class="day-title">${d.icon} ${tx().rotationShort} ${i+1}</h2><div class="sub">${tr(d.title)}</div><div class="rotation-note">${tx().rotationNote}</div></div>
+return `<div class="card"><h2 class="day-title">${d.icon} VS${i+1}</h2><div class="sub">${tr(d.title)}</div><div class="rotation-note">${tx().rotationNote}</div></div>
 <div class="card"><h3 class="section-title">${tx().main}</h3><ul class="list">${tr(d.main).map(x=>`<li>${x}</li>`).join("")}</ul></div>
 <div class="card"><h3 class="section-title">${tx().procedure}</h3><ol class="list">${tr(d.procedure).map(x=>`<li>${x}</li>`).join("")}</ol></div>
 <div class="card"><h3 class="section-title">${tx().times}</h3>${times}</div>
@@ -705,7 +723,7 @@ function homeView(){
  const mainItems=tr(d.main).slice(0,3);
  return `<section class="hero-panel">
    <h2>Dark War Assistant</h2>
-   <p>${ui().currentTask}: <strong>${tx().rotationShort} ${i+1}</strong> — ${tr(d.title)}</p>
+   <p>${ui().currentTask}: <strong>VS${i+1}</strong> — ${tr(d.title)}</p>
    <div class="quick-grid">
     <div class="quick-card"><div class="event-badge">${ui().vs}</div><h3>${ui().today}</h3><ul class="list">${mainItems.map(x=>`<li>${x}</li>`).join("")}</ul><button onclick="setPage('vs')">${ui().openVS}</button></div>
     <div class="quick-card"><div class="event-badge">${ui().nextEvent}</div>${next?`<h3>${next.ev.icon} ${eventName(next.ev.id)}</h3><div class="event-time">${pointLocal(next.time)}</div><div class="event-meta">${ui().serverTime}: ${next.time}<br>${ui().until}: ${formatDuration(next.date-Date.now())}</div>`:`<h3>${ui().noSchedule}</h3>`}<button onclick="setPage('alliance')">${ui().openAlliance}</button></div>
@@ -794,17 +812,17 @@ function vsView(){return current==="time"?commonView():dayView(current)}
 
 function renderTabs(){
  const el=document.getElementById("tabs");el.innerHTML="";
- el.style.display=page==="vs"?"flex":"none";
+ document.querySelector(".tab-shell").style.display=page==="vs"?"grid":"none";
  if(page!=="vs")return;
  const b=document.createElement("button");b.textContent="🌍 "+ui().world;b.className=current==="time"?"active":"";b.onclick=()=>setTab("time");el.appendChild(b);
  keys.forEach((k,i)=>{const x=document.createElement("button");x.textContent=D[k].icon+" VS "+(i+1);x.className=current===k?"active":"";x.onclick=()=>setTab(k);el.appendChild(x)});
- requestAnimationFrame(()=>el.querySelector(".active")?.scrollIntoView({behavior:"smooth",block:"nearest",inline:"center"}));
+ requestAnimationFrame(()=>{el.querySelector(".active")?.scrollIntoView({behavior:"smooth",block:"nearest",inline:"center"});updateTabArrows();});
 }
 function renderLang(){
  const s=document.getElementById("langSelect");
  if(s)s.value=lang;
  const label=document.getElementById("langLabel");
- if(label)label.textContent=LANGUAGE_LABELS[lang]||LANGUAGE_LABELS.en;
+ if(label)label.textContent="🌐";
 }
 function renderTimezone(){
   document.getElementById("tzLabel").textContent=tx().timezone+":";
@@ -828,8 +846,21 @@ function renderBottomNav(){
 }
 function renderAll(){renderLang();renderTimezone();renderTabs();renderMain();renderBottomNav()}
 document.getElementById("langSelect").addEventListener("change",e=>setLang(e.target.value));
-document.getElementById("homeBanner").addEventListener("click",()=>setPage("home"));
+document.getElementById("homeBanner").addEventListener("click",e=>{e.preventDefault();setPage("home")});
 document.querySelectorAll("#bottomNav button").forEach(b=>b.addEventListener("click",()=>setPage(b.dataset.page)));
+
+function updateTabArrows(){
+ const tabs=document.getElementById("tabs"),prev=document.getElementById("tabPrev"),next=document.getElementById("tabNext");
+ if(!tabs||!prev||!next)return;
+ const max=tabs.scrollWidth-tabs.clientWidth;
+ prev.disabled=tabs.scrollLeft<=4;
+ next.disabled=tabs.scrollLeft>=max-4;
+}
+document.getElementById("tabPrev").addEventListener("click",()=>document.getElementById("tabs").scrollBy({left:-220,behavior:"smooth"}));
+document.getElementById("tabNext").addEventListener("click",()=>document.getElementById("tabs").scrollBy({left:220,behavior:"smooth"}));
+document.getElementById("tabs").addEventListener("scroll",updateTabArrows,{passive:true});
+window.addEventListener("resize",updateTabArrows);
+
 document.documentElement.dir=lang==="ar"?"rtl":"ltr";
 renderAll();
 setInterval(()=>{if(["home","alliance","world"].includes(page)||current==="time")renderMain()},60000);
