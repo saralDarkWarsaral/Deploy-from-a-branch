@@ -307,6 +307,15 @@ body{padding-bottom:78px}
 .brand-link{border-radius:14px;padding:3px 5px;margin:-3px -5px}
 .brand-link:hover,.brand-link:focus{background:rgba(112,226,218,.08);outline:none}
 
+
+.language-box,.timezone-box{display:grid;grid-template-columns:42px minmax(0,1fr);align-items:center;gap:8px}
+.language-box label,.timezone-box label{
+  display:grid;place-items:center;width:42px;min-width:42px;
+  font-size:24px;line-height:1;color:var(--text);
+  overflow:hidden;white-space:nowrap
+}
+.language-box select,.timezone-box select{min-width:0;width:100%}
+
 </style>
 </head>
 <body>
@@ -331,7 +340,7 @@ body{padding-bottom:78px}
 <option value="tr">🇹🇷 Türkçe</option>
 </select>
 </div>
-<div class="timezone-box compact-control"><label id="tzLabel" for="tzSelect">🕒</label><select id="tzSelect"></select></div>
+<div class="timezone-box compact-control"><label id="tzLabel" for="tzSelect" aria-label="Local time">🕒</label><select id="tzSelect"></select></div>
 <div class="tab-shell">
 <button class="tab-arrow" id="tabPrev" aria-label="Previous">◀</button>
 <div class="tabs" id="tabs"></div>
