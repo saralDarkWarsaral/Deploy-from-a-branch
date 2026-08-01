@@ -316,6 +316,37 @@ body{padding-bottom:78px}
 }
 .language-box select,.timezone-box select{min-width:0;width:100%}
 
+
+:root{--official-teal:#63d9d1;--official-gold:#f1b15d}
+body{padding-bottom:82px}
+.language-box,.timezone-box{
+ display:grid!important;grid-template-columns:44px minmax(0,1fr)!important;
+ gap:8px!important;align-items:center!important
+}
+.language-box label,.timezone-box label{
+ width:44px!important;min-width:44px!important;height:44px!important;
+ display:grid!important;place-items:center!important;font-size:24px!important;
+ overflow:hidden!important;white-space:nowrap!important;color:var(--text)!important
+}
+.language-box select,.timezone-box select{width:100%!important;min-width:0!important}
+.home-timeline{display:grid;gap:11px;margin-top:14px}
+.timeline-card{
+ border:1px solid var(--line);border-radius:17px;padding:14px;
+ background:linear-gradient(160deg,rgba(18,45,57,.96),rgba(11,22,38,.98))
+}
+.timeline-card.now{box-shadow:0 0 0 1px rgba(99,217,209,.35)}
+.timeline-kicker{font-size:12px;font-weight:900;letter-spacing:.07em;color:var(--official-teal)}
+.timeline-card.next .timeline-kicker{color:var(--official-gold)}
+.timeline-title{font-size:19px;font-weight:900;margin:4px 0}
+.timeline-date{font-size:13px;color:var(--muted);margin-top:3px}
+.timeline-time{font-size:22px;font-weight:900;margin-top:6px}
+.timeline-meta{font-size:13px;color:var(--muted);line-height:1.55;margin-top:5px}
+.event-date-badge{
+ display:inline-flex;align-items:center;gap:6px;padding:5px 9px;border-radius:999px;
+ background:rgba(241,177,93,.14);color:#ffd08b;font-size:12px;font-weight:800
+}
+.past-hidden-note{font-size:12px;color:var(--muted);margin-top:8px}
+
 </style>
 </head>
 <body>
@@ -366,11 +397,11 @@ it:{target:"Obiettivo",leaderDecides:"Impostazione leader",round1:"Round 1",roun
 };
 function ui(){return UI[lang]||UI.en}
 const DEFAULT_EVENTS=[
- {id:"military",icon:"🏛️",time:"02:00",target:"5",team:"",rounds:"1",enabled:true,mode:"fixed"},
- {id:"frankie",icon:"🧪",times:["06:00","18:00"],team:"2",rounds:"2",enabled:true,mode:"leader"},
- {id:"blackGold",icon:"💎",time:"12:00",target:"",team:"",rounds:"1",enabled:true,mode:"fixed"},
- {id:"zombie",icon:"🧟",time:"",target:"",team:"",rounds:"22",enabled:false,mode:"leader"},
- {id:"president",icon:"👑",time:"",target:"",team:"",rounds:"",enabled:false,mode:"optional"}
+ {id:"military",icon:"🏛️",time:"02:00",date:"",duration:60,target:"5",team:"",rounds:"1",enabled:true,mode:"limited"},
+ {id:"frankie",icon:"🧪",times:["06:00","18:00"],duration:45,team:"2",rounds:"2",enabled:true,mode:"leader"},
+ {id:"blackGold",icon:"💎",time:"12:00",date:"",duration:60,target:"",team:"",rounds:"1",enabled:true,mode:"limited"},
+ {id:"zombie",icon:"🧟",time:"",duration:45,target:"",team:"",rounds:"22",enabled:false,mode:"leader"},
+ {id:"president",icon:"👑",time:"",date:"",duration:120,target:"",team:"",rounds:"",enabled:false,mode:"limited"}
 ];
 function loadAllianceEvents(){
  try{
@@ -398,6 +429,42 @@ function eventTimes(ev){
  if(Array.isArray(ev.times))return ev.times.filter(Boolean);
  return ev.time?[ev.time]:[];
 }
+
+function localDateTime(date){
+ return new Intl.DateTimeFormat(LOCALES[lang]||"en-GB",{
+  timeZone:activeZone(),year:"numeric",month:"short",day:"numeric",weekday:"short",
+  hour:"2-digit",minute:"2-digit",hour12:false
+ }).format(date);
+}
+function serverDateTime(date){
+ return new Intl.DateTimeFormat("en-CA",{
+  timeZone:"Etc/GMT+2",year:"numeric",month:"2-digit",day:"2-digit",
+  hour:"2-digit",minute:"2-digit",hour12:false
+ }).format(date);
+}
+function limitedEventDate(ev){
+ if(!ev.date||!ev.time)return null;
+ const [y,m,d]=ev.date.split("-").map(Number);
+ const [hh,mm]=ev.time.split(":").map(Number);
+ return new Date(Date.UTC(y,m-1,d,hh+2,mm));
+}
+function eventOccurrences(ev){
+ if(!ev.enabled)return [];
+ if(ev.mode==="limited"){
+  const start=limitedEventDate(ev);
+  return start?[{ev,time:ev.time,start,end:new Date(start.getTime()+(Number(ev.duration)||60)*60000)}]:[];
+ }
+ return eventTimes(ev).map(time=>{
+  const start=nextOccurrenceForTime(time);
+  return start?{ev,time,start,end:new Date(start.getTime()+(Number(ev.duration)||45)*60000)}:null;
+ }).filter(Boolean);
+}
+function upcomingAllianceOccurrences(){
+ const now=Date.now(),all=[];
+ allianceEvents.forEach(ev=>eventOccurrences(ev).forEach(o=>{if(o.end.getTime()>now)all.push(o)}));
+ return all.sort((a,b)=>a.start-b.start);
+}
+
 function nextOccurrenceForTime(hm){
  if(!hm)return null;
  const now=Date.now();
@@ -411,15 +478,7 @@ function nextEventOccurrence(ev){
 }
 
 function nextAllianceEvent(){
- const list=[];
- allianceEvents.forEach(ev=>{
-  if(!ev.enabled)return;
-  eventTimes(ev).forEach(time=>{
-   const date=nextOccurrenceForTime(time);
-   if(date)list.push({ev,time,date});
-  });
- });
- return list.sort((a,b)=>a.date-b.date)[0]||null;
+ return upcomingAllianceOccurrences().find(o=>o.start.getTime()>Date.now())||null;
 }
 
 const T={
@@ -725,18 +784,48 @@ function setPage(p){
  page=p;localStorage.setItem("dw_page",p);
  renderTabs();renderMain();renderBottomNav();
 }
+
+function currentVSOccurrence(){
+ const {currentSlot,now}=currentAndNextSlots();
+ if(!currentSlot)return null;
+ return {kind:"vs",title:"VS",start:new Date(currentSlot.start),end:new Date(currentSlot.end),server:currentSlot.range,local:serverRangeToZone(currentSlot.range),now};
+}
+function homeTimelineItems(){
+ const now=Date.now(),items=[];
+ const vsNow=currentVSOccurrence();
+ if(vsNow&&now<vsNow.end.getTime())items.push(vsNow);
+ upcomingAllianceOccurrences().forEach(o=>items.push({
+  kind:"alliance",title:`${o.ev.icon} ${eventName(o.ev.id)}`,
+  start:o.start,end:o.end,server:o.time,local:pointLocal(o.time),event:o.ev
+ }));
+ return items.filter(x=>x.end.getTime()>now).sort((a,b)=>{
+  const aLive=now>=a.start.getTime()&&now<a.end.getTime();
+  const bLive=now>=b.start.getTime()&&now<b.end.getTime();
+  if(aLive!==bLive)return aLive?-1:1;
+  return a.start-b.start;
+ }).slice(0,3);
+}
+function timelineCard(item,index){
+ const now=Date.now(),live=now>=item.start.getTime()&&now<item.end.getTime();
+ const kicker=live?tx().now:(index===1?tx().next:(ui().after||"AFTER"));
+ const countdown=live?`${tx().remaining}: ${formatDuration(item.end-now)}`:`${tx().startsIn}: ${formatDuration(item.start-now)}`;
+ return `<div class="timeline-card ${live?"now":"next"}">
+  <div class="timeline-kicker">${live?"🟢":"▶"} ${kicker}</div>
+  <div class="timeline-title">${item.title}</div>
+  <div class="timeline-date">📅 ${localDateTime(item.start)}</div>
+  <div class="timeline-time">${item.local}</div>
+  <div class="timeline-meta">🌐 ${tx().server}: ${item.server}<br>⏳ ${countdown}</div>
+ </div>`;
+}
+
 function homeView(){
- const next=nextAllianceEvent();
+ const items=homeTimelineItems();
  const k=keys.includes(current)?current:"monday";
  const d=D[k],i=keys.indexOf(k);
- const mainItems=tr(d.main).slice(0,3);
  return `<section class="hero-panel">
    <h2>Dark War Assistant</h2>
    <p>${ui().currentTask}: <strong>VS${i+1}</strong> — ${tr(d.title)}</p>
-   <div class="quick-grid">
-    <div class="quick-card"><div class="event-badge">${ui().vs}</div><h3>${ui().today}</h3><ul class="list">${mainItems.map(x=>`<li>${x}</li>`).join("")}</ul><button onclick="setPage('vs')">${ui().openVS}</button></div>
-    <div class="quick-card"><div class="event-badge">${ui().nextEvent}</div>${next?`<h3>${next.ev.icon} ${eventName(next.ev.id)}</h3><div class="event-time">${pointLocal(next.time)}</div><div class="event-meta">${ui().serverTime}: ${next.time}<br>${ui().until}: ${formatDuration(next.date-Date.now())}</div>`:`<h3>${ui().noSchedule}</h3>`}<button onclick="setPage('alliance')">${ui().openAlliance}</button></div>
-   </div>
+   <div class="home-timeline">${items.length?items.map(timelineCard).join(""):`<div class="timeline-card"><div class="timeline-title">${ui().noSchedule}</div></div>`}</div>
  </section>
  <div class="card"><h3>${ui().checkToday}</h3>${dailyChecklistView()}</div>`;
 }
@@ -748,31 +837,32 @@ function dailyChecklistView(){
  }).join("")}</div>`;
 }
 function allianceView(){
- const tomorrow=allianceEvents.filter(ev=>["military","frankie"].includes(ev.id));
- const season=allianceEvents.filter(ev=>["blackGold","zombie","president"].includes(ev.id));
+ const now=Date.now();
+ const visible=allianceEvents.filter(ev=>{
+  if(!ev.enabled)return false;
+  if(ev.mode!=="limited")return true;
+  const occ=eventOccurrences(ev)[0];
+  return !occ||occ.end.getTime()>now;
+ });
  return `<div class="card">
   <div class="page-title"><h2>🤝 ${ui().schedule}</h2></div>
   <p class="small-note">${ui().manualNote}</p>
+  <p class="past-hidden-note">${ui().eventEnded||""}</p>
  </div>
- <div class="schedule-section">
-  <div class="schedule-date">${ui().tomorrow}</div>
-  ${tomorrow.map((ev,n)=>eventCard(ev,allianceEvents.indexOf(ev))).join("")}
-  <div class="schedule-date">${ui().seasonDay}</div>
-  ${season.map((ev,n)=>eventCard(ev,allianceEvents.indexOf(ev))).join("")}
- </div>`;
+ <div class="schedule-section">${visible.map(ev=>eventCard(ev,allianceEvents.indexOf(ev))).join("")||`<div class="card">${ui().noSchedule}</div>`}</div>`;
 }
 function eventCard(ev,n){
- const times=eventTimes(ev);
- const next=nextEventOccurrence(ev);
- const first=times[0]||"";
- const second=times[1]||"";
- const statusTime=first?pointLocal(first):ui().unset;
+ const times=eventTimes(ev),first=times[0]||"",second=times[1]||"";
+ const occurrences=eventOccurrences(ev),occ=occurrences[0]||null;
+ const next=occ?occ.start:null;
  const targetText=ev.id==="military"&&ev.target?`${ui().target}: ${ev.target}`:"";
  const leaderText=ev.mode==="leader"?ui().leaderDecides:"";
+ const dateBadge=ev.mode==="limited"&&next?`<div class="event-date-badge">📅 ${localDateTime(next)}</div>`:"";
  return `<div class="schedule-card">
    <div class="schedule-icon">${ev.icon}</div>
    <div class="schedule-main">
     <div class="schedule-title">${eventName(ev.id)}</div>
+    ${dateBadge}
     <div class="schedule-sub">${[targetText,leaderText,ev.rounds?`${ui().rounds}: ${ev.rounds}`:""].filter(Boolean).join(" · ")}</div>
     ${ev.id==="frankie"?`<div class="round-times">
       <div class="round-pill">${ui().round1}<strong>${first?pointLocal(first):ui().unset}</strong><span>${ui().serverTime}: ${first||"—"}</span></div>
@@ -780,15 +870,17 @@ function eventCard(ev,n){
     </div>`:""}
    </div>
    <div class="schedule-time">
-    ${ev.id!=="frankie"?`<div class="local">${statusTime}</div><div class="server">${ui().serverTime}: ${first||"—"}</div>`:""}
+    ${ev.id!=="frankie"?`<div class="local">${first?pointLocal(first):ui().unset}</div><div class="server">${ui().serverTime}: ${first||"—"}</div>`:""}
     ${next?`<div class="count">${ui().until}: ${formatDuration(next-Date.now())}</div>`:""}
    </div>
    <details class="schedule-edit"><summary>${ui().edit}</summary>
     <div class="settings-grid">
+      ${ev.mode==="limited"?`<label>${ui().date||"Date"}<input type="date" id="ev_date_${n}" value="${ev.date||""}"></label>`:""}
       ${ev.id==="frankie"?`
        <label>${ui().round1}<input type="time" id="ev_time1_${n}" value="${first}"></label>
        <label>${ui().round2}<input type="time" id="ev_time2_${n}" value="${second}"></label>
       `:`<label>${ui().serverTime}<input type="time" id="ev_time_${n}" value="${first}"></label>`}
+      <label>${ui().duration||"Duration"}<input type="number" min="1" id="ev_duration_${n}" value="${ev.duration||60}"></label>
       ${ev.id==="military"?`<label>${ui().target}<input type="text" id="ev_target_${n}" value="${ev.target||""}"></label>`:""}
       <label>${ui().team}<input type="text" id="ev_team_${n}" value="${ev.team||""}"></label>
       <label>${ui().rounds}<input type="number" min="0" id="ev_rounds_${n}" value="${ev.rounds||""}"></label>
@@ -801,16 +893,17 @@ function eventCard(ev,n){
 function saveEventSetting(n){
  const ev=allianceEvents[n];
  if(ev.id==="frankie"){
-  ev.times=[
-   document.getElementById(`ev_time1_${n}`).value,
-   document.getElementById(`ev_time2_${n}`).value
-  ];
+  ev.times=[document.getElementById(`ev_time1_${n}`).value,document.getElementById(`ev_time2_${n}`).value];
  }else{
   ev.time=document.getElementById(`ev_time_${n}`).value;
  }
+ const date=document.getElementById(`ev_date_${n}`);
+ const duration=document.getElementById(`ev_duration_${n}`);
  const team=document.getElementById(`ev_team_${n}`);
  const rounds=document.getElementById(`ev_rounds_${n}`);
  const target=document.getElementById(`ev_target_${n}`);
+ if(date)ev.date=date.value;
+ if(duration)ev.duration=Number(duration.value)||60;
  if(team)ev.team=team.value;
  if(rounds)ev.rounds=rounds.value;
  if(target)ev.target=target.value;
@@ -830,14 +923,16 @@ function renderTabs(){
 function renderLang(){
  const s=document.getElementById("langSelect");
  if(s)s.value=lang;
- const label=document.getElementById("langLabel");
- if(label)label.textContent="🌐";
+ document.getElementById("langLabel").textContent="🌐";
 }
 function renderTimezone(){
-  document.getElementById("tzLabel").textContent=tx().timezone+":";
-  const sel=document.getElementById("tzSelect");
-  sel.innerHTML=zoneOptions.map(([value,zone])=>`<option value="${value}" ${selectedZone===value?"selected":""}>${value==="auto"?tx().automatic:(((zoneLabels[lang]||zoneLabels.en)[zone])||zone.replaceAll("_"," "))}</option>`).join("");
-  sel.onchange=e=>setZone(e.target.value);
+ document.getElementById("tzLabel").textContent="🕒";
+ const sel=document.getElementById("tzSelect");
+ sel.innerHTML=zoneOptions.map(([value,zone])=>{
+  const label=value==="auto"?(tx().local+" ("+tx().automatic.replace(/.*\(|\).*/g,"")+")"):(((zoneLabels[lang]||zoneLabels.en)[zone])||zone.replaceAll("_"," "));
+  return `<option value="${value}" ${selectedZone===value?"selected":""}>${label}</option>`;
+ }).join("");
+ sel.onchange=e=>setZone(e.target.value);
 }
 function renderMain(){
  const main=document.getElementById("main");
