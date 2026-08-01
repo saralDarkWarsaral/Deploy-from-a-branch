@@ -643,7 +643,7 @@ D.friday.check.ar=["تطوير المركبات","استخدام نوى الطا
 
 let page=localStorage.getItem("dw_page")||"home";
 let lang=localStorage.getItem("dw_lang")||"ja";
-let current=localStorage.getItem("dw_tab")||"time";
+let current="time";
 const keys=["monday","tuesday","wednesday","thursday","friday"];
 const deviceZone=Intl.DateTimeFormat().resolvedOptions().timeZone||"UTC";
 let selectedZone=localStorage.getItem("dw_timezone")||"auto";
@@ -675,8 +675,20 @@ function setLang(v){
  document.documentElement.dir=v==="ar"?"rtl":"ltr";
  renderAll();
 }
-function setTab(v){current=v;localStorage.setItem("dw_tab",v);renderAll()}
-function setZone(v){selectedZone=v;localStorage.setItem("dw_timezone",v);renderAll()}
+function weekdayIndexInActiveZone(){
+ const parts=new Intl.DateTimeFormat("en-US",{timeZone:activeZone(),weekday:"short"}).format(new Date());
+ return {Sun:0,Mon:1,Tue:2,Wed:3,Thu:4,Fri:5,Sat:6}[parts] ?? 0;
+}
+function tabForToday(){
+ const day=weekdayIndexInActiveZone();
+ return day>=1&&day<=5?keys[day-1]:"time";
+}
+function syncTabToToday(){
+ current=tabForToday();
+ localStorage.removeItem("dw_tab");
+}
+function setTab(v){current=v;renderAll()}
+function setZone(v){selectedZone=v;localStorage.setItem("dw_timezone",v);syncTabToToday();renderAll()}
 function serverRangeToZone(range,zone=activeZone()){
   const m=range.match(/^(\d{2}):(\d{2})[–-](\d{2}):(\d{2})$/);
   if(!m)return range;
@@ -757,7 +769,8 @@ let rows=sorted.map(r=>{
  const isCurrent=currentSlot&&r[0]===currentSlot.range;
  return `<div class="${isCurrent?"current-row":""}">${r[0]}</div><div class="${isCurrent?"current-row":""}">${serverRangeToZone(r[0])}</div>`;
 }).join("");
-return `<div class="card"><h2>${tx().common}</h2>
+const weekendNotice=weekdayIndexInActiveZone()===0||weekdayIndexInActiveZone()===6?`<div class="card"><h2>📅 ${tx().weekend}</h2><p>${tx().none}</p></div>`:"";
+return `${weekendNotice}<div class="card"><h2>${tx().common}</h2>
 ${statusView()}
 <p class="note">🌐 Server Time = UTC−2<br>📍 ${tx().currentZone}: ${zoneDisplayName()}<br>☀️/❄️ ${tx().dst}</p>
 <p class="rotation-note">↕ ${tx().localOrder}</p>
@@ -820,11 +833,13 @@ function timelineCard(item,index){
 
 function homeView(){
  const items=homeTimelineItems();
- const k=keys.includes(current)?current:"monday";
+ const todayTab=tabForToday();
+ const isWeekend=todayTab==="time";
+ const k=isWeekend?"monday":todayTab;
  const d=D[k],i=keys.indexOf(k);
  return `<section class="hero-panel">
    <h2>Dark War Assistant</h2>
-   <p>${ui().currentTask}: <strong>VS${i+1}</strong> — ${tr(d.title)}</p>
+   <p>${isWeekend?`<strong>${tx().weekend}</strong> — ${tx().none}`:`${ui().currentTask}: <strong>VS${i+1}</strong> — ${tr(d.title)}`}</p>
    <div class="home-timeline">${items.length?items.map(timelineCard).join(""):`<div class="timeline-card"><div class="timeline-title">${ui().noSchedule}</div></div>`}</div>
  </section>
  <div class="card"><h3>${ui().checkToday}</h3>${dailyChecklistView()}</div>`;
@@ -966,6 +981,7 @@ document.getElementById("tabs").addEventListener("scroll",updateTabArrows,{passi
 window.addEventListener("resize",updateTabArrows);
 
 document.documentElement.dir=lang==="ar"?"rtl":"ltr";
+syncTabToToday();
 renderAll();
 setInterval(()=>{if(["home","alliance","world"].includes(page)||current==="time")renderMain()},60000);
 </script>
