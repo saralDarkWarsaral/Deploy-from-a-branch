@@ -482,6 +482,51 @@ body{padding-bottom:82px}
   .home-event-count{grid-column:2;text-align:left}
 }
 
+
+/* ===== Phase 1.1: Compact Home ===== */
+.home-dashboard{gap:12px}
+.home-hero{padding:16px}
+.home-title{font-size:24px}
+.home-subtitle{font-size:14px}
+.home-clock-grid{margin-top:12px}
+.home-clock{padding:10px}
+.home-clock-value{font-size:21px}
+.home-section{padding:15px}
+.home-section-title{font-size:18px}
+.home-vs-card{padding:13px}
+.home-vs-name{font-size:20px}
+.home-action-list{gap:7px}
+.home-action{padding:9px 10px}
+.home-current-card{
+  border:1px solid rgba(99,217,209,.32);
+  border-radius:17px;padding:14px;
+  background:linear-gradient(155deg,rgba(15,48,56,.92),rgba(10,24,38,.96))
+}
+.home-current-top{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
+.home-current-kicker{font-size:12px;font-weight:900;color:#72e2da}
+.home-current-title{font-size:21px;font-weight:900;margin-top:4px}
+.home-current-count{font-size:13px;color:#ffc978;font-weight:850;margin-top:8px}
+.home-next-card{
+  display:grid;grid-template-columns:48px minmax(0,1fr);gap:11px;align-items:center;
+  border:1px solid var(--line);border-radius:16px;padding:12px;
+  background:rgba(11,23,39,.70)
+}
+.home-next-icon{width:48px;height:48px;border-radius:14px;display:grid;place-items:center;font-size:25px;background:rgba(241,177,93,.12)}
+.home-next-title{font-weight:900}
+.home-next-time{font-size:19px;font-weight:900;margin-top:4px}
+.home-next-meta{font-size:12px;color:var(--muted);margin-top:3px}
+.home-next-count{font-size:12px;color:#ffc978;margin-top:5px;font-weight:850}
+.home-week-events{display:grid;gap:8px}
+.home-week-row{
+  display:grid;grid-template-columns:38px minmax(0,1fr) auto;gap:10px;align-items:center;
+  padding:9px 10px;border:1px solid rgba(139,159,202,.15);
+  border-radius:13px;background:rgba(8,15,31,.42)
+}
+.home-week-row .icon{font-size:21px}
+.home-week-row .name{font-weight:850}
+.home-week-row .date{font-size:12px;color:var(--muted)}
+.home-week-row .count{font-size:12px;color:#ffc978;font-weight:800}
+
 </style>
 </head>
 <body>
@@ -1038,10 +1083,131 @@ function homeEventCard(o){
    <div class="home-event-count">${tx().startsIn}<br>${remaining}</div>
  </div>`;
 }
+
+function currentHomeItem(){
+ const now=Date.now();
+
+ const vs=typeof currentVSOccurrence==="function"?currentVSOccurrence():null;
+ const items=[];
+
+ if(vs && now>=vs.start.getTime() && now<vs.end.getTime()){
+  items.push({
+   kind:"vs", icon:"⚔️", title:"VS",
+   start:vs.start, end:vs.end,
+   local:vs.local, server:vs.server
+  });
+ }
+
+ upcomingAllianceOccurrences().forEach(o=>{
+  if(now>=o.start.getTime() && now<o.end.getTime()){
+   items.push({
+    kind:"event", icon:o.ev.icon||"📅", title:eventName(o.ev.id),
+    start:o.start, end:o.end,
+    local:localDateTime(o.start), server:o.time
+   });
+  }
+ });
+
+ return items.sort((a,b)=>a.end-b.end)[0]||null;
+}
+
+function nextHomeEvent(){
+ const now=Date.now();
+ const list=[];
+
+ upcomingAllianceOccurrences().forEach(o=>{
+  if(o.start.getTime()>now){
+   list.push({
+    icon:o.ev.icon||"📅",
+    title:eventName(o.ev.id),
+    start:o.start,
+    end:o.end,
+    server:o.time
+   });
+  }
+ });
+
+ return list.sort((a,b)=>a.start-b.start)[0]||null;
+}
+
+function homeCurrentCard(item){
+ if(!item)return "";
+ return `<section class="home-section">
+  <div class="home-current-card">
+   <div class="home-current-top">
+    <div>
+     <div class="home-current-kicker">🟢 ${tx().now}</div>
+     <div class="home-current-title">${item.icon} ${item.title}</div>
+    </div>
+    <span class="home-chip">${formatDuration(item.end-Date.now())}</span>
+   </div>
+   <div class="home-current-count">⏳ ${tx().remaining}: ${formatDuration(item.end-Date.now())}</div>
+  </div>
+ </section>`;
+}
+
+function homeNextCard(item){
+ if(!item)return "";
+ return `<section class="home-section">
+  <div class="home-section-head">
+   <div>
+    <div class="home-section-title">▶ ${tx().next}</div>
+    <div class="home-section-note">${ui().nextEvent}</div>
+   </div>
+  </div>
+  <div class="home-next-card">
+   <div class="home-next-icon">${item.icon}</div>
+   <div>
+    <div class="home-next-title">${item.title}</div>
+    <div class="home-next-time">${homeClock(item.start)}</div>
+    <div class="home-next-meta">📅 ${homeLocalDate(item.start)} · S ${item.server}</div>
+    <div class="home-next-count">⏳ ${tx().startsIn}: ${formatDuration(item.start-Date.now())}</div>
+   </div>
+  </div>
+ </section>`;
+}
+
+function homeWeekEvents(){
+ const now=Date.now();
+ const max=now+7*24*60*60*1000;
+ const next=nextHomeEvent();
+ const list=[];
+
+ upcomingAllianceOccurrences().forEach(o=>{
+  const t=o.start.getTime();
+  if(t>now && t<=max){
+   if(next && t===next.start.getTime() && eventName(o.ev.id)===next.title) return;
+   list.push(o);
+  }
+ });
+
+ const unique=list.slice(0,4);
+ if(!unique.length)return "";
+
+ return `<section class="home-section">
+  <div class="home-section-head">
+   <div>
+    <div class="home-section-title">📅 今週のイベント</div>
+    <div class="home-section-note">7日以内</div>
+   </div>
+  </div>
+  <div class="home-week-events">${unique.map(o=>`
+   <div class="home-week-row">
+    <div class="icon">${o.ev.icon||"📅"}</div>
+    <div>
+     <div class="name">${eventName(o.ev.id)}</div>
+     <div class="date">${homeLocalDate(o.start)} ${homeClock(o.start)}</div>
+    </div>
+    <div class="count">${formatDuration(o.start-Date.now())}</div>
+   </div>`).join("")}</div>
+ </section>`;
+}
+
 function homeView(){
  const now=homeNow();
  const vs=todayVSData();
- const events=registeredEventsThisWeek();
+ const currentItem=currentHomeItem();
+ const nextItem=nextHomeEvent();
 
  const vsBlock=vs?`
   <div class="home-vs-card">
@@ -1052,7 +1218,6 @@ function homeView(){
     </div>
     <span class="home-chip">${tx().days[vs.index]}</span>
    </div>
-   <div class="home-section-note">${ui().today}</div>
    ${homeVSChecklist(vs)}
   </div>`:
   `<div class="home-empty"><strong>${tx().weekend}</strong><br>${tx().none}</div>`;
@@ -1079,28 +1244,18 @@ function homeView(){
   <section class="home-section">
    <div class="home-section-head">
     <div>
-     <div class="home-section-title">⚔ ${ui().today}</div>
+     <div class="home-section-title">✅ 今日やること</div>
      <div class="home-section-note">${vs?`VS${vs.index+1}`:tx().weekend}</div>
     </div>
-    <span class="home-chip">${vs?"VS":"OFF"}</span>
    </div>
    ${vsBlock}
   </section>
 
-  ${events.length?`
-  <section class="home-section">
-   <div class="home-section-head">
-    <div>
-     <div class="home-section-title">📅 ${ui().nextEvent}</div>
-     <div class="home-section-note">7 days</div>
-    </div>
-    <span class="home-chip">${events.length}</span>
-   </div>
-   <div class="home-upcoming">${events.map(homeEventCard).join("")}</div>
-  </section>`:""}
+  ${homeCurrentCard(currentItem)}
+  ${homeNextCard(nextItem)}
+  ${homeWeekEvents()}
 
   <section class="home-section">
-   <div class="home-section-title" style="margin-bottom:12px">Quick Access</div>
    <div class="home-shortcuts">
     <button class="home-shortcut" onclick="setPage('vs')">
      <div class="home-shortcut-icon">⚔️</div><div class="home-shortcut-label">VS</div>
@@ -1115,6 +1270,7 @@ function homeView(){
   </section>
  </div>`;
 }
+
 function dailyChecklistView(){return ""}
 
 function allianceView(){
