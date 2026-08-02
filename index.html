@@ -347,6 +347,58 @@ body{padding-bottom:82px}
 }
 .past-hidden-note{font-size:12px;color:var(--muted);margin-top:8px}
 
+
+.time-pair{display:grid;gap:8px;margin-top:10px}
+.time-line{
+  display:grid;grid-template-columns:34px minmax(0,1fr);gap:10px;align-items:center;
+  padding:10px 12px;border-radius:13px;border:1px solid var(--line)
+}
+.time-line.local{
+  background:linear-gradient(180deg,rgba(69,211,199,.16),rgba(23,72,78,.14));
+  border-color:rgba(99,217,209,.45)
+}
+.time-line.server{
+  background:linear-gradient(180deg,rgba(109,144,255,.14),rgba(31,47,91,.16));
+  border-color:rgba(116,153,255,.38)
+}
+.time-icon{
+  width:34px;height:34px;border-radius:50%;display:grid;place-items:center;
+  font-size:18px;font-weight:900
+}
+.time-line.local .time-icon{background:#62d9d0;color:#07211f}
+.time-line.server .time-icon{background:#6f91ff;color:white}
+.time-copy{min-width:0}
+.time-label{font-size:12px;font-weight:850;letter-spacing:.02em}
+.time-line.local .time-label{color:#72e2da}
+.time-line.server .time-label{color:#9db2ff}
+.time-value{font-size:20px;font-weight:900;margin-top:2px;color:var(--text)}
+.time-inline-note{font-size:12px;color:var(--muted);margin-top:2px}
+
+
+.bg-battlefields{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+.bg-field{
+ border:1px solid var(--line);border-radius:14px;padding:12px;
+ background:rgba(13,25,43,.76)
+}
+.bg-field.active{
+ border-color:rgba(241,177,93,.58);
+ box-shadow:0 0 0 1px rgba(241,177,93,.18);
+ background:linear-gradient(180deg,rgba(88,55,26,.32),rgba(25,28,40,.88))
+}
+.bg-field-title{font-weight:900;color:#ffd08b;margin-bottom:8px}
+.bg-field .time-pair{margin-top:0}
+.bg-select{
+ display:flex;gap:8px;margin-top:12px
+}
+.bg-select button{
+ flex:1;border:1px solid var(--line);border-radius:12px;padding:10px;
+ background:#13243d;color:var(--text);font:inherit;font-weight:800
+}
+.bg-select button.active{
+ background:linear-gradient(180deg,#f0ba6a,#d6933f);
+ color:#2f1d0d;border-color:#f6cf91
+}
+
 </style>
 </head>
 <body>
@@ -391,15 +443,15 @@ body{padding-bottom:82px}
 <script>
 
 const UI={
-ja:{target:"対象",leaderDecides:"リーダー設定",round1:"1回目",round2:"2回目",tomorrow:"明日",seasonDay:"シーズン日程",unset:"未設定",home:"ホーム",alliance:"同盟",world:"世界時間",today:"今日やること",openVS:"VS攻略を見る",openAlliance:"同盟イベントを見る",currentTask:"今やること",nextEvent:"次の同盟イベント",noSchedule:"時刻未設定",edit:"設定",saveEvent:"保存",team:"チーム",rounds:"回数・ラウンド",serverTime:"サーバー時刻",enabled:"表示する",manualNote:"同盟ごとに開催時刻や回数が異なるため、この端末で設定します。設定後は現地時間とカウントダウンを自動表示します。",schedule:"同盟イベント予定",checkToday:"今日のチェック",vs:"VS",frankie:"バイオモンスター（フランキー）",military:"軍事庫争奪戦",blackGold:"黒金戦場",president:"大統領戦",zombie:"ゾンビ襲来",champion:"チャンピオン対決",season:"シーズンイベント",localTime:"現地時間",until:"開始まで",everyday:"毎日",custom:"同盟設定"},
-en:{target:"Target",leaderDecides:"Leader setting",round1:"Round 1",round2:"Round 2",tomorrow:"Tomorrow",seasonDay:"Season schedule",unset:"Not set",home:"Home",alliance:"Alliance",world:"World Time",today:"What to do today",openVS:"Open VS guide",openAlliance:"Open Alliance events",currentTask:"What to do now",nextEvent:"Next Alliance event",noSchedule:"Time not set",edit:"Settings",saveEvent:"Save",team:"Team",rounds:"Rounds",serverTime:"Server time",enabled:"Show",manualNote:"Alliance times and round counts differ, so set them on this device. Local time and countdown update automatically.",schedule:"Alliance event schedule",checkToday:"Today's checklist",vs:"VS",frankie:"Bio Monster (Frankie)",military:"Military Depot",blackGold:"Black Gold Battlefield",president:"President Battle",zombie:"Zombie Siege",champion:"Champion Duel",season:"Season Events",localTime:"Local time",until:"Starts in",everyday:"Daily",custom:"Alliance setting"},
-it:{target:"Obiettivo",leaderDecides:"Impostazione leader",round1:"Round 1",round2:"Round 2",tomorrow:"Domani",seasonDay:"Programma stagione",unset:"Non impostato",home:"Home",alliance:"Alleanza",world:"Ora mondiale",today:"Cosa fare oggi",openVS:"Apri guida VS",openAlliance:"Apri eventi Alleanza",currentTask:"Cosa fare adesso",nextEvent:"Prossimo evento Alleanza",noSchedule:"Orario non impostato",edit:"Impostazioni",saveEvent:"Salva",team:"Squadra",rounds:"Round",serverTime:"Ora server",enabled:"Mostra",manualNote:"Orari e round cambiano per ogni Alleanza. Impostali su questo dispositivo; ora locale e conto alla rovescia saranno automatici.",schedule:"Programma eventi Alleanza",checkToday:"Checklist di oggi",vs:"VS",frankie:"Bio Monster (Frankie)",military:"Deposito militare",blackGold:"Campo Oro Nero",president:"Battaglia presidenziale",zombie:"Assalto Zombie",champion:"Duello dei Campioni",season:"Eventi stagionali",localTime:"Ora locale",until:"Inizia tra",everyday:"Ogni giorno",custom:"Impostazione Alleanza"}
+ja:{battlefield:"戦場",battlefieldA:"A戦場",battlefieldB:"B戦場",selectedBattlefield:"参加戦場",localTimeLabel:"あなたの現地時間",serverTimeLabel:"サーバー時間",duration:"開催時間（分）",target:"対象",leaderDecides:"リーダー設定",round1:"1回目",round2:"2回目",tomorrow:"明日",seasonDay:"シーズン日程",unset:"未設定",home:"ホーム",alliance:"同盟",world:"世界時間",today:"今日やること",openVS:"VS攻略を見る",openAlliance:"同盟イベントを見る",currentTask:"今やること",nextEvent:"次の同盟イベント",noSchedule:"時刻未設定",edit:"設定",saveEvent:"保存",team:"チーム",rounds:"回数・ラウンド",serverTime:"サーバー時刻",enabled:"表示する",manualNote:"同盟ごとに開催時刻や回数が異なるため、この端末で設定します。設定後は現地時間とカウントダウンを自動表示します。",schedule:"同盟イベント予定",checkToday:"今日のチェック",vs:"VS",frankie:"バイオモンスター（フランキー）",military:"軍事庫争奪戦",blackGold:"黒金戦場",president:"大統領戦",zombie:"ゾンビ襲来",champion:"チャンピオン対決",season:"シーズンイベント",localTime:"現地時間",until:"開始まで",everyday:"毎日",custom:"同盟設定"},
+en:{battlefield:"Battlefield",battlefieldA:"Battlefield A",battlefieldB:"Battlefield B",selectedBattlefield:"Selected battlefield",localTimeLabel:"Your local time",serverTimeLabel:"Server time",duration:"Duration (min)",target:"Target",leaderDecides:"Leader setting",round1:"Round 1",round2:"Round 2",tomorrow:"Tomorrow",seasonDay:"Season schedule",unset:"Not set",home:"Home",alliance:"Alliance",world:"World Time",today:"What to do today",openVS:"Open VS guide",openAlliance:"Open Alliance events",currentTask:"What to do now",nextEvent:"Next Alliance event",noSchedule:"Time not set",edit:"Settings",saveEvent:"Save",team:"Team",rounds:"Rounds",serverTime:"Server time",enabled:"Show",manualNote:"Alliance times and round counts differ, so set them on this device. Local time and countdown update automatically.",schedule:"Alliance event schedule",checkToday:"Today's checklist",vs:"VS",frankie:"Bio Monster (Frankie)",military:"Military Depot",blackGold:"Black Gold Battlefield",president:"President Battle",zombie:"Zombie Siege",champion:"Champion Duel",season:"Season Events",localTime:"Local time",until:"Starts in",everyday:"Daily",custom:"Alliance setting"},
+it:{battlefield:"Campo",battlefieldA:"Campo A",battlefieldB:"Campo B",selectedBattlefield:"Campo selezionato",localTimeLabel:"La tua ora locale",serverTimeLabel:"Ora server",duration:"Durata (min)",target:"Obiettivo",leaderDecides:"Impostazione leader",round1:"Round 1",round2:"Round 2",tomorrow:"Domani",seasonDay:"Programma stagione",unset:"Non impostato",home:"Home",alliance:"Alleanza",world:"Ora mondiale",today:"Cosa fare oggi",openVS:"Apri guida VS",openAlliance:"Apri eventi Alleanza",currentTask:"Cosa fare adesso",nextEvent:"Prossimo evento Alleanza",noSchedule:"Orario non impostato",edit:"Impostazioni",saveEvent:"Salva",team:"Squadra",rounds:"Round",serverTime:"Ora server",enabled:"Mostra",manualNote:"Orari e round cambiano per ogni Alleanza. Impostali su questo dispositivo; ora locale e conto alla rovescia saranno automatici.",schedule:"Programma eventi Alleanza",checkToday:"Checklist di oggi",vs:"VS",frankie:"Bio Monster (Frankie)",military:"Deposito militare",blackGold:"Campo Oro Nero",president:"Battaglia presidenziale",zombie:"Assalto Zombie",champion:"Duello dei Campioni",season:"Eventi stagionali",localTime:"Ora locale",until:"Inizia tra",everyday:"Ogni giorno",custom:"Impostazione Alleanza"}
 };
 function ui(){return UI[lang]||UI.en}
 const DEFAULT_EVENTS=[
  {id:"military",icon:"🏛️",time:"02:00",date:"",duration:60,target:"5",team:"",rounds:"1",enabled:true,mode:"limited"},
  {id:"frankie",icon:"🧪",times:["06:00","18:00"],duration:45,team:"2",rounds:"2",enabled:true,mode:"leader"},
- {id:"blackGold",icon:"💎",time:"12:00",date:"",duration:60,target:"",team:"",rounds:"1",enabled:true,mode:"limited"},
+ {id:"blackGold",icon:"💎",battlefields:{A:{time:"10:00",duration:50},B:{time:"01:00",duration:50}},selectedBattlefield:"A",date:"",enabled:true,mode:"limited"},
  {id:"zombie",icon:"🧟",time:"",duration:45,target:"",team:"",rounds:"22",enabled:false,mode:"leader"},
  {id:"president",icon:"👑",time:"",date:"",duration:120,target:"",team:"",rounds:"",enabled:false,mode:"limited"}
 ];
@@ -410,6 +462,16 @@ function loadAllianceEvents(){
  }catch(e){return structuredClone(DEFAULT_EVENTS)}
 }
 let allianceEvents=loadAllianceEvents();
+{
+ const bg=allianceEvents.find(e=>e.id==="blackGold");
+ if(bg&&!bg.battlefields){
+  bg.battlefields={A:{time:"10:00",duration:50},B:{time:"01:00",duration:50}};
+  bg.selectedBattlefield="A";
+  bg.mode="limited";
+  delete bg.time; delete bg.duration; delete bg.team; delete bg.rounds;
+  saveAllianceEvents();
+ }
+}
 function saveAllianceEvents(){localStorage.setItem("dw_alliance_events",JSON.stringify(allianceEvents))}
 function eventName(id){return ui()[id]||id}
 function serverPointToDate(hm,dayOffset=0){
@@ -448,8 +510,39 @@ function limitedEventDate(ev){
  const [hh,mm]=ev.time.split(":").map(Number);
  return new Date(Date.UTC(y,m-1,d,hh+2,mm));
 }
+
+function addMinutesToServerTime(hm,minutes){
+ if(!hm)return "—";
+ const [h,m]=hm.split(":").map(Number);
+ const total=(h*60+m+Number(minutes||0))%(24*60);
+ return `${String(Math.floor(total/60)).padStart(2,"0")}:${String(total%60).padStart(2,"0")}`;
+}
+function localRangeFromServer(hm,duration){
+ if(!hm)return ui().unset;
+ const start=serverPointToDate(hm,0);
+ const end=new Date(start.getTime()+Number(duration||0)*60000);
+ const fmt=new Intl.DateTimeFormat(LOCALES[lang]||"en-GB",{timeZone:activeZone(),hour:"2-digit",minute:"2-digit",hour12:false});
+ return `${fmt.format(start)}–${fmt.format(end)}`;
+}
+function serverRange(hm,duration){
+ if(!hm)return "—";
+ return `${hm}–${addMinutesToServerTime(hm,duration)}`;
+}
+function blackGoldSelectedData(ev){
+ const key=ev.selectedBattlefield==="B"?"B":"A";
+ return {key,...ev.battlefields[key]};
+}
+
 function eventOccurrences(ev){
  if(!ev.enabled)return [];
+ if(ev.id==="blackGold"){
+  const bg=blackGoldSelectedData(ev);
+  if(!ev.date||!bg.time)return [];
+  const [y,m,d]=ev.date.split("-").map(Number);
+  const [hh,mm]=bg.time.split(":").map(Number);
+  const start=new Date(Date.UTC(y,m-1,d,hh+2,mm));
+  return [{ev,time:bg.time,start,end:new Date(start.getTime()+Number(bg.duration||50)*60000),battlefield:bg.key}];
+ }
  if(ev.mode==="limited"){
   const start=limitedEventDate(ev);
   return start?[{ev,time:ev.time,start,end:new Date(start.getTime()+(Number(ev.duration)||60)*60000)}]:[];
@@ -826,8 +919,17 @@ function timelineCard(item,index){
   <div class="timeline-kicker">${live?"🟢":"▶"} ${kicker}</div>
   <div class="timeline-title">${item.title}</div>
   <div class="timeline-date">📅 ${localDateTime(item.start)}</div>
-  <div class="timeline-time">${item.local}</div>
-  <div class="timeline-meta">🌐 ${tx().server}: ${item.server}<br>⏳ ${countdown}</div>
+  <div class="time-pair">
+    <div class="time-line local">
+      <div class="time-icon">🕒</div>
+      <div class="time-copy"><div class="time-label">${ui().localTimeLabel}</div><div class="time-value">${item.local}</div></div>
+    </div>
+    <div class="time-line server">
+      <div class="time-icon">S</div>
+      <div class="time-copy"><div class="time-label">${ui().serverTimeLabel}</div><div class="time-value">${item.server}</div></div>
+    </div>
+  </div>
+  <div class="timeline-meta">⏳ ${countdown}</div>
  </div>`;
 }
 
@@ -873,29 +975,159 @@ function eventCard(ev,n){
  const targetText=ev.id==="military"&&ev.target?`${ui().target}: ${ev.target}`:"";
  const leaderText=ev.mode==="leader"?ui().leaderDecides:"";
  const dateBadge=ev.mode==="limited"&&next?`<div class="event-date-badge">📅 ${localDateTime(next)}</div>`:"";
+
+ if(ev.id==="blackGold"){
+   const A=ev.battlefields.A,B=ev.battlefields.B,selected=ev.selectedBattlefield==="B"?"B":"A";
+   return `<div class="schedule-card">
+    <div class="schedule-icon">${ev.icon}</div>
+    <div class="schedule-main">
+      <div class="schedule-title">${eventName(ev.id)}</div>
+      ${dateBadge}
+      <div class="schedule-sub">${ui().selectedBattlefield}: ${selected==="A"?ui().battlefieldA:ui().battlefieldB}</div>
+
+      <div class="bg-battlefields">
+        <div class="bg-field ${selected==="A"?"active":""}">
+          <div class="bg-field-title">${ui().battlefieldA}</div>
+          <div class="time-pair">
+            <div class="time-line local">
+              <div class="time-icon">🕒</div>
+              <div class="time-copy">
+                <div class="time-label">${ui().localTimeLabel}</div>
+                <div class="time-value">${localRangeFromServer(A.time,A.duration)}</div>
+              </div>
+            </div>
+            <div class="time-line server">
+              <div class="time-icon">S</div>
+              <div class="time-copy">
+                <div class="time-label">${ui().serverTimeLabel}</div>
+                <div class="time-value">${serverRange(A.time,A.duration)}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-field ${selected==="B"?"active":""}">
+          <div class="bg-field-title">${ui().battlefieldB}</div>
+          <div class="time-pair">
+            <div class="time-line local">
+              <div class="time-icon">🕒</div>
+              <div class="time-copy">
+                <div class="time-label">${ui().localTimeLabel}</div>
+                <div class="time-value">${localRangeFromServer(B.time,B.duration)}</div>
+              </div>
+            </div>
+            <div class="time-line server">
+              <div class="time-icon">S</div>
+              <div class="time-copy">
+                <div class="time-label">${ui().serverTimeLabel}</div>
+                <div class="time-value">${serverRange(B.time,B.duration)}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      ${next?`<div class="schedule-time"><div class="count">${ui().until}: ${formatDuration(next-Date.now())}</div></div>`:""}
+    </div>
+
+    <details class="schedule-edit"><summary>${ui().edit}</summary>
+      <div class="settings-grid">
+        <label>${ui().date||"Date"}<input type="date" id="ev_date_${n}" value="${ev.date||""}"></label>
+        <label>${ui().battlefieldA} ${ui().serverTimeLabel}<input type="time" id="ev_bgA_time_${n}" value="${A.time}"></label>
+        <label>${ui().battlefieldA} ${ui().duration}<input type="number" min="1" id="ev_bgA_duration_${n}" value="${A.duration}"></label>
+        <label>${ui().battlefieldB} ${ui().serverTimeLabel}<input type="time" id="ev_bgB_time_${n}" value="${B.time}"></label>
+        <label>${ui().battlefieldB} ${ui().duration}<input type="number" min="1" id="ev_bgB_duration_${n}" value="${B.duration}"></label>
+        <label>${ui().selectedBattlefield}
+          <select id="ev_bg_selected_${n}">
+            <option value="A" ${selected==="A"?"selected":""}>${ui().battlefieldA}</option>
+            <option value="B" ${selected==="B"?"selected":""}>${ui().battlefieldB}</option>
+          </select>
+        </label>
+        <label>${ui().enabled}<select id="ev_enabled_${n}"><option value="1" ${ev.enabled?"selected":""}>ON</option><option value="0" ${!ev.enabled?"selected":""}>OFF</option></select></label>
+      </div>
+      <div class="event-actions"><button onclick="saveEventSetting(${n})">${ui().saveEvent}</button></div>
+    </details>
+   </div>`;
+ }
+
  return `<div class="schedule-card">
    <div class="schedule-icon">${ev.icon}</div>
    <div class="schedule-main">
     <div class="schedule-title">${eventName(ev.id)}</div>
     ${dateBadge}
     <div class="schedule-sub">${[targetText,leaderText,ev.rounds?`${ui().rounds}: ${ev.rounds}`:""].filter(Boolean).join(" · ")}</div>
-    ${ev.id==="frankie"?`<div class="round-times">
-      <div class="round-pill">${ui().round1}<strong>${first?pointLocal(first):ui().unset}</strong><span>${ui().serverTime}: ${first||"—"}</span></div>
-      <div class="round-pill">${ui().round2}<strong>${second?pointLocal(second):ui().unset}</strong><span>${ui().serverTime}: ${second||"—"}</span></div>
-    </div>`:""}
+
+    ${ev.id==="frankie"?`
+      <div class="round-times">
+        <div class="round-pill">
+          ${ui().round1}
+          <div class="time-pair">
+            <div class="time-line local">
+              <div class="time-icon">🕒</div>
+              <div class="time-copy">
+                <div class="time-label">${ui().localTimeLabel}</div>
+                <div class="time-value">${first?pointLocal(first):ui().unset}</div>
+              </div>
+            </div>
+            <div class="time-line server">
+              <div class="time-icon">S</div>
+              <div class="time-copy">
+                <div class="time-label">${ui().serverTimeLabel}</div>
+                <div class="time-value">${first||"—"}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="round-pill">
+          ${ui().round2}
+          <div class="time-pair">
+            <div class="time-line local">
+              <div class="time-icon">🕒</div>
+              <div class="time-copy">
+                <div class="time-label">${ui().localTimeLabel}</div>
+                <div class="time-value">${second?pointLocal(second):ui().unset}</div>
+              </div>
+            </div>
+            <div class="time-line server">
+              <div class="time-icon">S</div>
+              <div class="time-copy">
+                <div class="time-label">${ui().serverTimeLabel}</div>
+                <div class="time-value">${second||"—"}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>`:`
+      <div class="time-pair">
+        <div class="time-line local">
+          <div class="time-icon">🕒</div>
+          <div class="time-copy">
+            <div class="time-label">${ui().localTimeLabel}</div>
+            <div class="time-value">${first?pointLocal(first):ui().unset}</div>
+          </div>
+        </div>
+        <div class="time-line server">
+          <div class="time-icon">S</div>
+          <div class="time-copy">
+            <div class="time-label">${ui().serverTimeLabel}</div>
+            <div class="time-value">${first||"—"}</div>
+          </div>
+        </div>
+      </div>`}
    </div>
+
    <div class="schedule-time">
-    ${ev.id!=="frankie"?`<div class="local">${first?pointLocal(first):ui().unset}</div><div class="server">${ui().serverTime}: ${first||"—"}</div>`:""}
     ${next?`<div class="count">${ui().until}: ${formatDuration(next-Date.now())}</div>`:""}
    </div>
+
    <details class="schedule-edit"><summary>${ui().edit}</summary>
     <div class="settings-grid">
       ${ev.mode==="limited"?`<label>${ui().date||"Date"}<input type="date" id="ev_date_${n}" value="${ev.date||""}"></label>`:""}
       ${ev.id==="frankie"?`
        <label>${ui().round1}<input type="time" id="ev_time1_${n}" value="${first}"></label>
        <label>${ui().round2}<input type="time" id="ev_time2_${n}" value="${second}"></label>
-      `:`<label>${ui().serverTime}<input type="time" id="ev_time_${n}" value="${first}"></label>`}
-      <label>${ui().duration||"Duration"}<input type="number" min="1" id="ev_duration_${n}" value="${ev.duration||60}"></label>
+      `:`<label>${ui().serverTimeLabel}<input type="time" id="ev_time_${n}" value="${first}"></label>`}
+      <label>${ui().duration}<input type="number" min="1" id="ev_duration_${n}" value="${ev.duration||60}"></label>
       ${ev.id==="military"?`<label>${ui().target}<input type="text" id="ev_target_${n}" value="${ev.target||""}"></label>`:""}
       <label>${ui().team}<input type="text" id="ev_team_${n}" value="${ev.team||""}"></label>
       <label>${ui().rounds}<input type="number" min="0" id="ev_rounds_${n}" value="${ev.rounds||""}"></label>
@@ -907,6 +1139,26 @@ function eventCard(ev,n){
 }
 function saveEventSetting(n){
  const ev=allianceEvents[n];
+
+ if(ev.id==="blackGold"){
+  const date=document.getElementById(`ev_date_${n}`);
+  const enabled=document.getElementById(`ev_enabled_${n}`);
+  ev.date=date?date.value:"";
+  ev.battlefields={
+   A:{
+    time:document.getElementById(`ev_bgA_time_${n}`).value,
+    duration:Number(document.getElementById(`ev_bgA_duration_${n}`).value)||50
+   },
+   B:{
+    time:document.getElementById(`ev_bgB_time_${n}`).value,
+    duration:Number(document.getElementById(`ev_bgB_duration_${n}`).value)||50
+   }
+  };
+  ev.selectedBattlefield=document.getElementById(`ev_bg_selected_${n}`).value;
+  ev.enabled=enabled.value==="1";
+  saveAllianceEvents();renderMain();return;
+ }
+
  if(ev.id==="frankie"){
   ev.times=[document.getElementById(`ev_time1_${n}`).value,document.getElementById(`ev_time2_${n}`).value];
  }else{
