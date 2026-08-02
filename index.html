@@ -1111,6 +1111,11 @@ function currentHomeItem(){
  return items.sort((a,b)=>a.end-b.end)[0]||null;
 }
 
+function occurrenceKey(o){
+ const extra=o.battlefield||o.round||"";
+ return `${o.ev.id}|${o.start.getTime()}|${extra}`;
+}
+
 function nextHomeEvent(){
  const now=Date.now();
  const list=[];
@@ -1118,11 +1123,14 @@ function nextHomeEvent(){
  upcomingAllianceOccurrences().forEach(o=>{
   if(o.start.getTime()>now){
    list.push({
+    key:occurrenceKey(o),
+    id:o.ev.id,
     icon:o.ev.icon||"📅",
     title:eventName(o.ev.id),
     start:o.start,
     end:o.end,
-    server:o.time
+    server:o.time,
+    battlefield:o.battlefield||""
    });
   }
  });
@@ -1171,18 +1179,26 @@ function homeWeekEvents(){
  const now=Date.now();
  const max=now+7*24*60*60*1000;
  const next=nextHomeEvent();
+ const seen=new Set();
  const list=[];
 
  upcomingAllianceOccurrences().forEach(o=>{
   const t=o.start.getTime();
-  if(t>now && t<=max){
-   if(next && t===next.start.getTime() && eventName(o.ev.id)===next.title) return;
-   list.push(o);
-  }
+  if(t<=now || t>max)return;
+
+  const key=occurrenceKey(o);
+
+  // 「次のイベント」に表示している同一回だけを除外する。
+  // 同じ日でも別イベント・別時刻・別ラウンドは残す。
+  if(next && key===next.key)return;
+  if(seen.has(key))return;
+
+  seen.add(key);
+  list.push(o);
  });
 
- const unique=list.slice(0,4);
- if(!unique.length)return "";
+ const events=list.sort((a,b)=>a.start-b.start).slice(0,6);
+ if(!events.length)return "";
 
  return `<section class="home-section">
   <div class="home-section-head">
@@ -1191,11 +1207,11 @@ function homeWeekEvents(){
     <div class="home-section-note">7日以内</div>
    </div>
   </div>
-  <div class="home-week-events">${unique.map(o=>`
+  <div class="home-week-events">${events.map(o=>`
    <div class="home-week-row">
     <div class="icon">${o.ev.icon||"📅"}</div>
     <div>
-     <div class="name">${eventName(o.ev.id)}</div>
+     <div class="name">${eventName(o.ev.id)}${o.battlefield?`・${o.battlefield}`:""}</div>
      <div class="date">${homeLocalDate(o.start)} ${homeClock(o.start)}</div>
     </div>
     <div class="count">${formatDuration(o.start-Date.now())}</div>
